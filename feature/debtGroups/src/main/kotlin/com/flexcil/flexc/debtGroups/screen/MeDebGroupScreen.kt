@@ -22,9 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,8 +80,40 @@ private val mockGroups = listOf(
 
 @Composable
 fun MeDebGroupScreen(
-    onGroupClick: () -> Unit
+    onQrScannerClick: () -> Unit,
+    onQrCreatorClick: () -> Unit
 ) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onQrScannerClick),
+        color = MaterialTheme.colorScheme.primary
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.QrCodeScanner,
+                contentDescription = "Scan QR",
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.size(32.dp)
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Text(
+                text = "Scan QR code to\njoin a group",
+                color = MaterialTheme.colorScheme.onPrimary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                lineHeight = 20.sp
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
     Text(
         text = "Your groups",
         color = MaterialTheme.colorScheme.onSurface,
@@ -98,7 +132,7 @@ fun MeDebGroupScreen(
         items(mockGroups) { group ->
             GroupCard(
                 group = group,
-                onCardClick = onGroupClick
+                onQrCreatorClick = onQrCreatorClick
             )
         }
         item {
@@ -110,17 +144,15 @@ fun MeDebGroupScreen(
 @Composable
 private fun GroupCard(
     group: GroupItem,
-    onCardClick: () -> Unit = {}
+    onQrCreatorClick: () -> Unit
 ) {
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFFE55D5D), Color(0xFF4A2B2B)))
         )
-
         BackgroundStyle.BLUE_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFF2B88F0), Color(0xFF1C3A5A)))
         )
-
         BackgroundStyle.DARK_SOLID -> Modifier.background(MaterialTheme.colorScheme.surface)
     }
 
@@ -130,9 +162,6 @@ private fun GroupCard(
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .then(backgroundModifier)
-            .clickable {
-                onCardClick()
-            }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -182,12 +211,30 @@ private fun GroupCard(
             val balancePrefix = if (group.balance > 0) "+ " else if (group.balance < 0) "- " else ""
             val formattedBalance = "${balancePrefix}${abs(group.balance).toInt()} EUR"
 
-            Text(
-                text = formattedBalance,
-                color = balanceColor,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+                    onClick = onQrCreatorClick,
+                    modifier = Modifier
+                        .offset(y = (-8).dp)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.QrCode,
+                        contentDescription = "Show QR Code",
+                        tint = Color(0xFF2B88F0), // A nice vibrant blue
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                Text(
+                    text = formattedBalance,
+                    color = balanceColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

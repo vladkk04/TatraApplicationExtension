@@ -10,6 +10,7 @@ dependencies {
     implementation(projects.feature.shared)
     implementation(projects.feature.createGroup)
     implementation(projects.feature.qrScanner)
+    implementation(projects.feature.qrCreator)
     implementation(projects.feature.savingGroups)
     implementation(projects.feature.debtGroups)
     implementation(projects.feature.contribute)

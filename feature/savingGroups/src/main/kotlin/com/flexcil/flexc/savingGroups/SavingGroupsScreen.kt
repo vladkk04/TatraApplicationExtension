@@ -12,6 +12,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.*
@@ -65,7 +66,8 @@ val mockGroups = listOf(
 
 @Composable
 fun SavingGroupsScreen(
-    viewModel: SavingGroupsViewModel = hiltViewModel()
+    viewModel: SavingGroupsViewModel = hiltViewModel(),
+    onQrCreatorClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -88,6 +90,7 @@ fun SavingGroupsScreen(
         mockGroups.forEach { group ->
             GroupCard(
                 group = group,
+                onQrCreatorClick = onQrCreatorClick,
                 onClick = {
                     // Navigate to details specifically for the Party group
                     if (group.title == "Party") {
@@ -106,6 +109,7 @@ fun SavingGroupsScreen(
 @Composable
 fun GroupCard(
     group: GroupItem,
+    onQrCreatorClick: () -> Unit,
     onClick: () -> Unit
 ) {
     val backgroundModifier = when (group.backgroundStyle) {
@@ -172,12 +176,30 @@ fun GroupCard(
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }
 
-            Text(
-                text = "${group.balance.toInt()} EUR",
-                color = balanceColor,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+                    onClick = onQrCreatorClick,
+                    modifier = Modifier
+                        .offset(y = (-8).dp)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.QrCode,
+                        contentDescription = "Show QR Code",
+                        tint = Color(0xFF2B88F0), // A nice vibrant blue
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                Text(
+                    text = "${group.balance.toInt()} EUR",
+                    color = balanceColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }
