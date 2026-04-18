@@ -10,6 +10,10 @@ dependencies {
     implementation(projects.navigation)
 
     implementation(projects.feature.home)
+    implementation(projects.feature.shared)
+    implementation(projects.feature.createGroup)
+    implementation(projects.feature.qrScanner)
+    implementation(projects.feature.savingGroups)
 
     implementation(projects.domain)
     implementation(projects.data)

@@ -14,5 +14,9 @@ dependencies {
     implementation(libs.google.mlkit.barcode)
     implementation(libs.androidx.camera.core)
 
+    api("androidx.compose.ui:ui-tooling-preview")
+
+    api("androidx.compose.ui:ui-tooling")
+
     api(libs.datastore.preferences)
 }
