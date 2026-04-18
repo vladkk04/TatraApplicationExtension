@@ -2,19 +2,26 @@ package com.flexcil.flexc.shared
 
 import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
@@ -27,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -45,6 +53,9 @@ fun SharedScreen() {
         },
         onCreateGroud = {
             viewModel.navigateToCreateGroud()
+        },
+        onDebDetails = {
+            viewModel.navigateToDebtDetails()
         }
     )
 }
@@ -53,7 +64,8 @@ fun SharedScreen() {
 @Composable
 private fun SharedContent(
     onQrScannerClick: () -> Unit,
-    onCreateGroud: () -> Unit
+    onCreateGroud: () -> Unit,
+    onDebDetails: () -> Unit,
 ) {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("My debt groups", "Savings groups")
@@ -108,9 +120,42 @@ private fun SharedContent(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable(onClick = onQrScannerClick),
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            onQrScannerClick()
+                        },
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.QrCodeScanner,
+                        contentDescription = "Scan QR",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                    Spacer(modifier = Modifier.width(16.dp))
+                    Text(
+                        text = "Scan QR code to\njoin a group",
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+
 
             when (selectedTabIndex) {
-                0 -> MeDebGroupScreen(onQrScannerClick = onQrScannerClick)
+                0 -> MeDebGroupScreen(onDebDetails)
                 1 -> SavingGroupsScreen()
             }
         }

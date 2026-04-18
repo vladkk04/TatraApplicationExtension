@@ -154,17 +154,6 @@ fun CreateGroupScreen() {
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
         ) {
-            Text(
-                text = "New Group",
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 32.dp)
-            )
-
             val options = listOf("Debt Group", "Savings Account")
             val selectedIndex = if (selectedGroupType == GroupType.DEBT_GROUP) 0 else 1
 

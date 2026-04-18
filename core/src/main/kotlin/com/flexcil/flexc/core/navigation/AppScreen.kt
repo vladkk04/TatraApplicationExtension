@@ -25,6 +25,8 @@ sealed interface AppScreen: NavKey {
     data object CreateSpendingScreen: AppScreen
 
 
+    @Serializable
+    data object DebDetails: AppScreen
 
     @Serializable
     data object SavingGroupsDetails: AppScreen

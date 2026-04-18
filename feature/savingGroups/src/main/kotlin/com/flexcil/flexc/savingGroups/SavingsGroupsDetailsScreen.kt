@@ -1,5 +1,6 @@
 package com.flexcil.flexc.savingGroups
 
+import android.R.attr.padding
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -76,51 +77,21 @@ fun SavingsGroupsDetailsScreen(
 
     val currentContributors = if (selectedTab == 0) incomeContributors else expenseContributors
 
-    Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        text = "Group Details",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 18.sp
-                        )
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More")
-                    }
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background
-                )
-            )
-        }
-    ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp)
-        ) {
-            SavingsOverviewCard(currentContributors, isExpense = selectedTab == 1)
-            Spacer(modifier = Modifier.height(24.dp))
-            SavingsTabs(selectedTab) { selectedTab = it }
-            Spacer(modifier = Modifier.height(24.dp))
-            RequestsSection()
-            Spacer(modifier = Modifier.height(32.dp))
-            ContributionsSection(currentContributors, isExpense = selectedTab == 1)
-            Spacer(modifier = Modifier.height(40.dp))
-        }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 16.dp)
+    ) {
+        SavingsOverviewCard(currentContributors, isExpense = selectedTab == 1)
+        Spacer(modifier = Modifier.height(24.dp))
+        SavingsTabs(selectedTab) { selectedTab = it }
+        Spacer(modifier = Modifier.height(24.dp))
+        RequestsSection()
+        Spacer(modifier = Modifier.height(32.dp))
+        ContributionsSection(currentContributors, isExpense = selectedTab == 1)
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 

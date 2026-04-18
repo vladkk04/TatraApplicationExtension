@@ -78,39 +78,8 @@ private val mockGroups = listOf(
 
 @Composable
 fun MeDebGroupScreen(
-    onQrScannerClick: () -> Unit
+    onGroupClick: () -> Unit
 ) {
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(12.dp))
-            .clickable(onClick = onQrScannerClick),
-        color = MaterialTheme.colorScheme.primary
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                imageVector = Icons.Outlined.QrCodeScanner,
-                contentDescription = "Scan QR",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Scan QR code to\njoin a group",
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                lineHeight = 20.sp
-            )
-        }
-    }
-
-    Spacer(modifier = Modifier.height(24.dp))
-
     Text(
         text = "Your groups",
         color = MaterialTheme.colorScheme.onSurface,
@@ -127,7 +96,10 @@ fun MeDebGroupScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(mockGroups) { group ->
-            GroupCard(group = group)
+            GroupCard(
+                group = group,
+                onCardClick = onGroupClick
+            )
         }
         item {
             Spacer(modifier = Modifier.height(80.dp)) // Padding for FAB
@@ -136,14 +108,19 @@ fun MeDebGroupScreen(
 }
 
 @Composable
-private fun GroupCard(group: GroupItem) {
+private fun GroupCard(
+    group: GroupItem,
+    onCardClick: () -> Unit = {}
+) {
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFFE55D5D), Color(0xFF4A2B2B)))
         )
+
         BackgroundStyle.BLUE_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFF2B88F0), Color(0xFF1C3A5A)))
         )
+
         BackgroundStyle.DARK_SOLID -> Modifier.background(MaterialTheme.colorScheme.surface)
     }
 
@@ -153,6 +130,9 @@ private fun GroupCard(group: GroupItem) {
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .then(backgroundModifier)
+            .clickable {
+                onCardClick()
+            }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

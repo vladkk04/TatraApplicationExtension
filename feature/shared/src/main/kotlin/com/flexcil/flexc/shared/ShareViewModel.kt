@@ -18,4 +18,8 @@ class ShareViewModel @Inject constructor(
     fun navigateToCreateGroud() {
         navigator.launchScreen(AppScreen.NewGroup)
     }
+
+    fun navigateToDebtDetails() {
+        navigator.launchScreen(AppScreen.DebDetails)
+    }
 }
