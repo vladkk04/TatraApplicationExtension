@@ -1,4 +1,4 @@
-package com.flexcil.flexc.savingGroups.model
+package com.flexcil.flexc.core.model
 
 import androidx.compose.ui.graphics.vector.ImageVector
 
