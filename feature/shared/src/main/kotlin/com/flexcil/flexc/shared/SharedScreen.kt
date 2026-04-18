@@ -1,5 +1,6 @@
 package com.flexcil.flexc.shared
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,9 +28,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+
+import com.flexcil.flexc.debtGroups.screen.MeDebGroupScreen
+import com.flexcil.flexc.savingGroups.SavingGroupsScreen
 
 @Composable
 fun SharedScreen() {
@@ -104,10 +109,10 @@ private fun SharedContent(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            /*when (selectedTabIndex) {
-                0 -> SavingGroupsScreen(onQrScannerClick = onQrScannerClick)
-                1 -> SavingGroupsScreen(onQrScannerClick = onQrScannerClick)
-            }*/
+            when (selectedTabIndex) {
+                0 -> MeDebGroupScreen(onQrScannerClick = onQrScannerClick)
+                1 -> SavingGroupsScreen()
+            }
         }
 
         FloatingActionButton(

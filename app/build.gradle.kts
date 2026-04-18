@@ -12,8 +12,11 @@ dependencies {
     implementation(projects.feature.home)
     implementation(projects.feature.shared)
     implementation(projects.feature.createGroup)
+    implementation(projects.feature.debtGroups)
     implementation(projects.feature.qrScanner)
     implementation(projects.feature.savingGroups)
+    implementation(projects.feature.createSpending)
+
 
     implementation(projects.domain)
     implementation(projects.data)

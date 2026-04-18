@@ -3,31 +3,18 @@ package com.flexcil.flexc.savingGroups
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.QrCodeScanner
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,10 +24,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.flexcil.flexc.savingGroups.model.BackgroundStyle
-import com.flexcil.flexc.savingGroups.model.GroupItem
-import kotlin.math.abs
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.flexcil.flexc.core.model.BackgroundStyle
+import com.flexcil.flexc.core.model.GroupItem
 
 val mockGroups = listOf(
     GroupItem(
@@ -48,15 +34,15 @@ val mockGroups = listOf(
         subtitle = "Вечірка",
         icon = Icons.Default.Group,
         usersCount = 4,
-        balance = 100.0,
-        backgroundStyle = BackgroundStyle.RED_GRADIENT
+        balance = 4400.0,
+        backgroundStyle = BackgroundStyle.DARK_SOLID
     ),
     GroupItem(
         title = "Food",
         subtitle = "Їжа",
         icon = Icons.Default.Restaurant,
         usersCount = 3,
-        balance = -100.0,
+        balance = 100.0,
         backgroundStyle = BackgroundStyle.DARK_SOLID
     ),
     GroupItem(
@@ -65,7 +51,7 @@ val mockGroups = listOf(
         icon = Icons.Default.Backpack,
         usersCount = 3,
         balance = 0.0,
-        backgroundStyle = BackgroundStyle.BLUE_GRADIENT
+        backgroundStyle = BackgroundStyle.DARK_SOLID
     ),
     GroupItem(
         title = "Lunch",
@@ -79,69 +65,81 @@ val mockGroups = listOf(
 
 @Composable
 fun SavingGroupsScreen(
-
+    viewModel: SavingGroupsViewModel = hiltViewModel()
 ) {
-    Surface(
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clip(RoundedCornerShape(12.dp)),
-            /*.clickable(onClick = onQrScannerClick),*/
-        color = MaterialTheme.colorScheme.primary
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(vertical = 16.dp)
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+        // --- QR Scanner Header ---
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .clickable { /* Logic for QR Scanner if needed */ },
+            color = MaterialTheme.colorScheme.primary
         ) {
-            Icon(
-                imageVector = Icons.Outlined.QrCodeScanner,
-                contentDescription = "Scan QR",
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.size(32.dp)
+            Row(
+                modifier = Modifier.padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.QrCodeScanner,
+                    contentDescription = "Scan QR",
+                    tint = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(32.dp)
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                Text(
+                    text = "Scan QR code to\njoin a group",
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = 20.sp
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text(
+            text = "Your groups",
+            color = MaterialTheme.colorScheme.onSurface,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 16.dp)
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // --- Groups List ---
+        mockGroups.forEach { group ->
+            GroupCard(
+                group = group,
+                onClick = {
+                    // Navigate to details specifically for the Party group
+                    if (group.title == "Party") {
+                        viewModel.navigateToSavingGroupDetails()
+                    }
+                }
             )
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Scan QR code to\njoin a group",
-                color = MaterialTheme.colorScheme.onPrimary,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                lineHeight = 20.sp
-            )
+            Spacer(modifier = Modifier.height(12.dp))
         }
-    }
 
-    Spacer(modifier = Modifier.height(24.dp))
-
-    Text(
-        text = "Your groups",
-        color = MaterialTheme.colorScheme.onSurface,
-        fontSize = 18.sp,
-        fontWeight = FontWeight.Bold,
-        modifier = Modifier.padding(horizontal = 16.dp)
-    )
-
-    Spacer(modifier = Modifier.height(12.dp))
-
-    // Group List
-    LazyColumn(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        items(mockGroups) { group ->
-            GroupCard(group = group)
-        }
-        item {
-            Spacer(modifier = Modifier.height(80.dp)) // Padding for FAB
-        }
+        // Extra spacer to ensure content isn't hidden by the BottomBar
+        Spacer(modifier = Modifier.height(80.dp))
     }
 }
 
 @Composable
 fun GroupCard(
-    group: GroupItem
+    group: GroupItem,
+    onClick: () -> Unit
 ) {
-    val viewModel = hiltViewModel<SavingGroupsViewModel>()
-
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFFE55D5D), Color(0xFF4A2B2B)))
@@ -158,15 +156,13 @@ fun GroupCard(
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .then(backgroundModifier)
-            .clickable {
-                viewModel.navigateToSavingGroupDetails()
-            }
+            .clickable { onClick() }
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Icon
+            // Icon Background
             Box(
                 modifier = Modifier
                     .size(48.dp)
@@ -177,14 +173,14 @@ fun GroupCard(
                 Icon(
                     imageVector = group.icon,
                     contentDescription = group.title,
-                    tint = Color.White, // Іконка завжди біла на темному напівпрозорому фоні
+                    tint = Color.White,
                     modifier = Modifier.size(24.dp)
                 )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Text Info
+            // Text Information
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = group.title,
@@ -201,17 +197,15 @@ fun GroupCard(
                 OverlappingAvatars(usersCount = group.usersCount)
             }
 
-            // Balance
+            // Balance - Formatting: No +/- prefixes
             val balanceColor = when {
                 group.balance > 0 -> MaterialTheme.colorScheme.tertiary
                 group.balance < 0 -> MaterialTheme.colorScheme.error
                 else -> MaterialTheme.colorScheme.onSurfaceVariant
             }
-            val balancePrefix = if (group.balance > 0) "+ " else if (group.balance < 0) "- " else ""
-            val formattedBalance = "${balancePrefix}${abs(group.balance).toInt()} EUR"
 
             Text(
-                text = formattedBalance,
+                text = "${group.balance.toInt()} EUR",
                 color = balanceColor,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
@@ -221,18 +215,18 @@ fun GroupCard(
 }
 
 @Composable
-private fun OverlappingAvatars(usersCount: Int) {
+fun OverlappingAvatars(usersCount: Int) {
     val avatarColors = listOf(
         MaterialTheme.colorScheme.primary,
         MaterialTheme.colorScheme.onSurfaceVariant,
         MaterialTheme.colorScheme.error,
-        Color(0xFFD2BCA0) // Залишаємо пісочний колір як додатковий
+        Color(0xFFD2BCA0)
     )
     Row {
         for (i in 0 until usersCount) {
             Box(
                 modifier = Modifier
-                    .offset(x = (-8 * i).dp) // Накладання одне на одне
+                    .offset(x = (-8 * i).dp)
                     .size(24.dp)
                     .clip(CircleShape)
                     .background(avatarColors[i % avatarColors.size])
@@ -241,7 +235,7 @@ private fun OverlappingAvatars(usersCount: Int) {
             ) {
                 Icon(
                     imageVector = Icons.Default.Person,
-                    contentDescription = "User",
+                    contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     modifier = Modifier.size(16.dp)
                 )

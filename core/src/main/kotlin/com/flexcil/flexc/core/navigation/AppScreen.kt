@@ -18,7 +18,20 @@ sealed interface AppScreen: NavKey {
     @Serializable
     data object NewGroup: AppScreen
 
+    @Serializable
+    data object CreateGroupScreen: AppScreen
+
+    @Serializable
+    data object CreateSpendingScreen: AppScreen
+
+
 
     @Serializable
     data object SavingGroupsDetails: AppScreen
+
+    @Serializable
+    data object PaymentScreen: AppScreen
+
+    @Serializable
+    data object TransactionScreen: AppScreen
 }

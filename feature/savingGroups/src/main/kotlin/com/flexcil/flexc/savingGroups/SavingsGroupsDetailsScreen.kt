@@ -1,419 +1,458 @@
 package com.flexcil.flexc.savingGroups
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.window.PopupProperties
 
-// --- Specific Data Colors from Design ---
 private val ChartGreen = Color(0xFF66E289)
-private val AvatarRed = Color(0xFF6B1E2C)
-private val AvatarOlive = Color(0xFF4C5D23)
-private val AvatarPurple = Color(0xFF2E235D)
-private val AvatarRose = Color(0xFFC08985)
-private val SegmentRed = Color(0xFFB91C1C)
-private val SegmentBlue = Color(0xFF1D4ED8)
-private val SegmentGreen = Color(0xFF4ADE80)
-private val SegmentPink = Color(0xFFFBCFE8)
+private val AvatarRed = Color(0xFFE55D5D)
+private val AvatarOlive = Color(0xFFD2BCA0)
+private val AvatarPurple = Color(0xFF2B88F0)
+private val AvatarRose = Color(0xFFFBCFE8)
+
 private val DarkCardBorder = Color(0xFF2F3036)
-private val TabBackground = Color(0xFF232429)
-private val TabActiveBackground = Color(0xFF3B3C42)
+private val TabBackground = Color(0xFF1C1C1E)
+private val TabActiveBackground = Color(0xFF2C2C2E)
 
+data class Contributor(
+    val id: String,
+    val initials: String,
+    val name: String,
+    val amount: Double,
+    val color: Color
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavingsGroupsDetailsScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .padding(vertical = 16.dp)
-    ) {
-        SavingsOverviewCard(modifier = Modifier.padding(horizontal = 16.dp))
+fun SavingsGroupsDetailsScreen(
+    onBackClick: () -> Unit
+) {
+    var selectedTab by remember { mutableIntStateOf(0) }
+    
+    val incomeContributors = remember {
+        listOf(
+            Contributor("1", "VD", "Vladyslav Dorosh", 1700.0, AvatarRed),
+            Contributor("2", "VK", "Vladyslav Klymiuk", 900.0, AvatarOlive),
+            Contributor("3", "DD", "Daniil Dryzhov", 1100.0, AvatarPurple),
+            Contributor("4", "DY", "Danyil Yatluk", 700.0, AvatarRose)
+        )
+    }
 
-        Spacer(modifier = Modifier.height(24.dp))
+    val expenseContributors = remember {
+        listOf(
+            Contributor("1", "VD", "Vladyslav Dorosh", -500.0, AvatarRed),
+            Contributor("2", "VK", "Vladyslav Klymiuk", -1200.0, AvatarOlive),
+            Contributor("3", "DD", "Daniil Dryzhov", -300.0, AvatarPurple),
+            Contributor("4", "DY", "Danyil Yatluk", -400.0, AvatarRose)
+        )
+    }
 
-        SavingsTabs(modifier = Modifier.padding(horizontal = 16.dp))
+    val currentContributors = if (selectedTab == 0) incomeContributors else expenseContributors
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        ContributionsSection(modifier = Modifier.padding(horizontal = 16.dp))
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        RequestsSection(modifier = Modifier.padding(horizontal = 16.dp))
-
-        Spacer(modifier = Modifier.height(40.dp)) // Bottom padding
+    Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Group Details",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                    }
+                },
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background
+                )
+            )
+        }
+    ) { padding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
+        ) {
+            SavingsOverviewCard(currentContributors, isExpense = selectedTab == 1)
+            Spacer(modifier = Modifier.height(24.dp))
+            SavingsTabs(selectedTab) { selectedTab = it }
+            Spacer(modifier = Modifier.height(24.dp))
+            RequestsSection()
+            Spacer(modifier = Modifier.height(32.dp))
+            ContributionsSection(currentContributors, isExpense = selectedTab == 1)
+            Spacer(modifier = Modifier.height(40.dp))
+        }
     }
 }
 
 @Composable
-private fun SavingsOverviewCard(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
+private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Boolean) {
+    val totalAmount = contributors.sumOf { it.amount }
+    var selectedContributor by remember { mutableStateOf<Contributor?>(null) }
+    // Reset selection when tab changes
+    LaunchedEffect(isExpense) { selectedContributor = null }
+
+    val displayColor = if (isExpense) Color(0xFFE55D5D) else ChartGreen
+
+    Surface(
+        modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(16.dp)
+            .heightIn(min = 200.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = Color(0xFF1C1C1E),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
     ) {
+        Column(
+            modifier = Modifier.padding(24.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column {
+                    Text(
+                        if (isExpense) "Total Expenses" else "Your Savings",
+                        color = Color.White.copy(alpha = 0.6f),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        "${totalAmount.toInt()} EUR",
+                        color = if (isExpense) Color(0xFFE55D5D) else Color.White,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+                SavingsChart(modifier = Modifier.size(110.dp, 70.dp), isExpense = isExpense)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // Interactive Segmented Bar
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(14.dp)
+                        .clip(CircleShape)
+                        .background(Color.White.copy(alpha = 0.1f))
+                ) {
+                    Row(modifier = Modifier.fillMaxSize()) {
+                        val totalMagnitude = contributors.sumOf { kotlin.math.abs(it.amount) }
+                        contributors.forEach { contributor ->
+                            val weight = (kotlin.math.abs(contributor.amount) / totalMagnitude).toFloat()
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(weight)
+                                    .background(contributor.color)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = null
+                                    ) {
+                                        selectedContributor = if (selectedContributor == contributor) null else contributor
+                                    }
+                            )
+                        }
+                    }
+                }
+
+                // Popup Tooltip
+                selectedContributor?.let { contributor ->
+                    Popup(
+                        alignment = Alignment.TopCenter,
+                        offset = androidx.compose.ui.unit.IntOffset(0, -100),
+                        onDismissRequest = { selectedContributor = null },
+                        properties = PopupProperties(focusable = false)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFF2C2C2E),
+                            border = BorderStroke(1.dp, contributor.color.copy(alpha = 0.5f)),
+                            shadowElevation = 8.dp
+                        ) {
+                            Text(
+                                text = "${contributor.name}: ${contributor.amount.toInt()} EUR",
+                                color = Color.White,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SavingsChart(modifier: Modifier = Modifier, isExpense: Boolean = false) {
+    val chartColor = if (isExpense) Color(0xFFE55D5D) else ChartGreen
+    Canvas(modifier = modifier) {
+        val width = size.width
+        val height = size.height
+        
+        val path = Path().apply {
+            if (isExpense) {
+                // Downward trend for expenses
+                moveTo(0f, height * 0.2f)
+                cubicTo(width * 0.2f, height * 0.1f, width * 0.4f, height * 0.8f, width * 0.6f, height * 0.5f)
+                cubicTo(width * 0.8f, height * 0.2f, width * 0.9f, height * 0.9f, width, height * 0.8f)
+            } else {
+                // Upward trend for income
+                moveTo(0f, height * 0.8f)
+                cubicTo(width * 0.2f, height * 0.9f, width * 0.4f, height * 0.2f, width * 0.6f, height * 0.5f)
+                cubicTo(width * 0.8f, height * 0.8f, width * 0.9f, height * 0.1f, width, height * 0.2f)
+            }
+        }
+        
+        drawPath(
+            path = path,
+            color = chartColor,
+            style = Stroke(width = 3.dp.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
+        
+        drawPath(
+            path = path,
+            brush = Brush.verticalGradient(
+                colors = listOf(chartColor.copy(alpha = 0.2f), Color.Transparent),
+                startY = 0f,
+                endY = height
+            ),
+            style = Stroke(width = 8.dp.toPx(), cap = StrokeCap.Round)
+        )
+    }
+}
+
+@Composable
+private fun SavingsTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp),
+        shape = RoundedCornerShape(28.dp),
+        color = TabBackground
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            listOf("Incomes", "Expenses").forEachIndexed { index, text ->
+                val selected = selectedTab == index
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clip(RoundedCornerShape(24.dp))
+                        .background(if (selected) TabActiveBackground else Color.Transparent)
+                        .clickable { onTabSelected(index) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = text,
+                        color = if (selected) Color.White else Color.White.copy(alpha = 0.5f),
+                        fontSize = 15.sp,
+                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContributionsSection(contributors: List<Contributor>, isExpense: Boolean) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left side (Text & Amounts)
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = "Your Savings",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Serif // Similar to the elegant font in design
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "4400$",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Normal
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Color Segments Bar
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth(0.9f)
-                        .height(8.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                ) {
-                    Box(modifier = Modifier.weight(0.35f).fillMaxSize().background(SegmentRed))
-                    Box(modifier = Modifier.weight(0.35f).fillMaxSize().background(SegmentBlue))
-                    Box(modifier = Modifier.weight(0.2f).fillMaxSize().background(SegmentGreen))
-                    Box(modifier = Modifier.weight(0.1f).fillMaxSize().background(SegmentPink))
-                }
-            }
-
-            // Right side (Chart)
-            SavingsChart(
-                modifier = Modifier
-                    .width(140.dp)
-                    .height(80.dp)
-            )
-        }
-    }
-}
-
-@Composable
-private fun SavingsChart(modifier: Modifier = Modifier) {
-    val gridColor = MaterialTheme.colorScheme.surfaceVariant
-
-    Canvas(modifier = modifier) {
-        val width = size.width
-        val height = size.height
-
-        // Draw horizontal grid lines
-        val linesCount = 4
-        val spacing = height / linesCount
-        for (i in 0..linesCount) {
-            val y = i * spacing
-            drawLine(
-                color = gridColor.copy(alpha = 0.5f),
-                start = Offset(0f, y),
-                end = Offset(width, y),
-                strokeWidth = 1.dp.toPx()
-            )
-        }
-
-        // Define chart path (imitating the curve from the image)
-        val path = Path().apply {
-            moveTo(0f, height * 0.9f)
-            cubicTo(width * 0.2f, height * 0.5f, width * 0.3f, height * 0.8f, width * 0.5f, height * 0.6f)
-            cubicTo(width * 0.7f, height * 0.4f, width * 0.8f, height * 0.4f, width, height * 0.1f)
-        }
-
-        // Fill path for gradient
-        val fillPath = Path().apply {
-            addPath(path)
-            lineTo(width, height)
-            lineTo(0f, height)
-            close()
-        }
-
-        drawPath(
-            path = fillPath,
-            brush = Brush.verticalGradient(
-                colors = listOf(ChartGreen.copy(alpha = 0.3f), Color.Transparent),
-                startY = 0f,
-                endY = height
-            )
-        )
-
-        // Draw green line
-        drawPath(
-            path = path,
-            color = ChartGreen,
-            style = Stroke(
-                width = 2.dp.toPx(),
-                cap = StrokeCap.Round,
-                join = StrokeJoin.Round
-            )
-        )
-    }
-}
-
-@Composable
-private fun SavingsTabs(modifier: Modifier = Modifier) {
-    var selectedTab by remember { mutableStateOf(0) }
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .height(48.dp)
-            .clip(RoundedCornerShape(24.dp))
-            .background(TabBackground)
-            .padding(4.dp)
-    ) {
-        TabItem(
-            text = "Incomes",
-            selected = selectedTab == 0,
-            onClick = { selectedTab = 0 },
-            modifier = Modifier.weight(1f)
-        )
-        TabItem(
-            text = "Expenses",
-            selected = selectedTab == 1,
-            onClick = { selectedTab = 1 },
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun TabItem(
-    text: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .clip(RoundedCornerShape(20.dp))
-            .background(if (selected) TabActiveBackground else Color.Transparent)
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = text,
-            color = if (selected) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium
-        )
-    }
-}
-
-@Composable
-private fun ContributionsSection(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
-        ) {
             Text(
-                text = "Contribute",
-                color = MaterialTheme.colorScheme.primary, // Blue color from image
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.clickable { /* Handle contribute */ }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        ContributorItem(initials = "VD", name = "Vladyslav Dorosh", amount = "+1700,00", avatarColor = AvatarRed)
-        Spacer(modifier = Modifier.height(8.dp))
-        ContributorItem(initials = "VK", name = "Vladyslav Klymiuk", amount = "+900,00", avatarColor = AvatarOlive)
-        Spacer(modifier = Modifier.height(8.dp))
-        ContributorItem(initials = "DD", name = "Daniil Dryzhov", amount = "+1100,00", avatarColor = AvatarPurple)
-        Spacer(modifier = Modifier.height(8.dp))
-        ContributorItem(initials = "DY", name = "Danyil Yatluk", amount = "+700,00", avatarColor = AvatarRose, isLast = true)
-    }
-}
-
-@Composable
-private fun ContributorItem(
-    initials: String,
-    name: String,
-    amount: String,
-    avatarColor: Color,
-    isLast: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, DarkCardBorder, RoundedCornerShape(12.dp))
-            .background(MaterialTheme.colorScheme.background) // Very dark background
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Avatar
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(avatarColor),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = initials,
+                if (isExpense) "Expenses" else "Contributions",
                 color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
             )
-        }
-
-        Spacer(modifier = Modifier.width(16.dp))
-
-        // Name and Card Info
-        Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = name,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = "SK30 **** **** **** 3664",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                fontSize = 12.sp
-            )
-        }
-
-        // Amount
-        Row(verticalAlignment = Alignment.Bottom) {
-            Text(
-                text = amount,
-                color = ChartGreen,
+                if (isExpense) "Request Expense" else "Contribute",
+                color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.clickable { }
             )
-            Text(
-                text = " EUR",
-                color = ChartGreen,
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Medium,
-                modifier = Modifier.padding(bottom = 2.dp, start = 2.dp)
-            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+        contributors.forEach { contributor ->
+            ContributorItem(contributor, isExpense)
+            Spacer(modifier = Modifier.height(12.dp))
         }
     }
 }
 
 @Composable
-private fun RequestsSection(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.fillMaxWidth()) {
-        Text(
-            text = "Requests",
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
+private fun ContributorItem(contributor: Contributor, isExpense: Boolean) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFF1C1C1E),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+    ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, DarkCardBorder, RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.background)
-                .padding(12.dp),
+            modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Avatar
             Box(
                 modifier = Modifier
-                    .size(48.dp)
+                    .size(44.dp)
                     .clip(CircleShape)
-                    .background(AvatarRed),
+                    .background(contributor.color.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "VD",
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    contributor.initials,
+                    color = contributor.color,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
                 )
             }
-
             Spacer(modifier = Modifier.width(16.dp))
-
-            // Details
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Vladyslav Dorosh",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium
+                    contributor.name,
+                    color = Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
                 )
-                Spacer(modifier = Modifier.height(2.dp))
                 Text(
-                    text = "-1200 $",
-                    color = MaterialTheme.colorScheme.error, // Red text for negative request
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
+                    "SK30 **** **** 3664",
+                    color = Color.White.copy(alpha = 0.4f),
+                    fontSize = 12.sp
                 )
             }
+            Text(
+                "${contributor.amount.toInt()} EUR",
+                color = if (isExpense) Color(0xFFE55D5D) else ChartGreen,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
 
-            // Approve Button
-            Button(
-                onClick = { /* Approve action */ },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary, // Blue button
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                modifier = Modifier.height(36.dp)
+@Composable
+private fun RequestsSection() {
+    var isApproved by remember { mutableStateOf(false) }
+    
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            "Requests",
+            color = Color.White,
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Bold
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            color = Color(0xFF1C1C1E),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+        ) {
+            Row(
+                modifier = Modifier.padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = "Approve", fontSize = 14.sp)
+                Box(
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(CircleShape)
+                        .background(if (isApproved) Color.Gray.copy(alpha = 0.2f) else AvatarRed.copy(alpha = 0.2f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("VD", color = if (isApproved) Color.Gray else AvatarRed, fontWeight = FontWeight.Bold)
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        "Vladyslav Dorosh",
+                        color = if (isApproved) Color.Gray else Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                    Text("1200 EUR", color = if (isApproved) Color.Gray else Color(0xFFE55D5D), fontSize = 14.sp)
+                }
+                
+                if (isApproved) {
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = Color.White.copy(alpha = 0.05f),
+                        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
+                    ) {
+                        Text(
+                            "Approved 1/3",
+                            color = Color.Gray,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
+                        )
+                    }
+                } else {
+                    Button(
+                        onClick = { isApproved = true },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text("Approve", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                    }
+                }
             }
         }
     }

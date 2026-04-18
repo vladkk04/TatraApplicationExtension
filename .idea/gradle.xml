@@ -29,12 +29,15 @@
             <option value="$PROJECT_DIR$/data" />
             <option value="$PROJECT_DIR$/domain" />
             <option value="$PROJECT_DIR$/feature" />
+            <option value="$PROJECT_DIR$/feature/contribute" />
             <option value="$PROJECT_DIR$/feature/createGroup" />
+            <option value="$PROJECT_DIR$/feature/createSpending" />
             <option value="$PROJECT_DIR$/feature/debtGroups" />
             <option value="$PROJECT_DIR$/feature/home" />
             <option value="$PROJECT_DIR$/feature/qrScanner" />
             <option value="$PROJECT_DIR$/feature/savingGroups" />
             <option value="$PROJECT_DIR$/feature/shared" />
+            <option value="$PROJECT_DIR$/feature/transaction" />
             <option value="$PROJECT_DIR$/navigation" />
           </set>
         </option>

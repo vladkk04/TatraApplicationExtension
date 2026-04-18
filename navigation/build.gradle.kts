@@ -11,6 +11,9 @@ dependencies {
     implementation(projects.feature.createGroup)
     implementation(projects.feature.qrScanner)
     implementation(projects.feature.savingGroups)
+    implementation(projects.feature.contribute)
+    implementation(projects.feature.transaction)
+    implementation(projects.feature.createSpending)
 
 
     implementation(projects.core)
