@@ -6,5 +6,6 @@ plugins {
 dependencies {
     implementation(projects.core)
     implementation(projects.domain)
-
+    implementation(projects.feature.savingGroups)
+    implementation(projects.feature.debtGroups)
 }

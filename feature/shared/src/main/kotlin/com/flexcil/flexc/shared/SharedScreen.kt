@@ -33,6 +33,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
+import com.flexcil.flexc.debtGroups.screen.MeDebGroupScreen
+import com.flexcil.flexc.savingGroups.SavingGroupsScreen
+
 @Composable
 fun SharedScreen() {
     val viewModel = hiltViewModel<ShareViewModel>()
@@ -106,10 +109,10 @@ private fun SharedContent(
             Spacer(modifier = Modifier.height(16.dp))
 
 
-            /*when (selectedTabIndex) {
-                0 -> SavingGroupsScreen(onQrScannerClick = onQrScannerClick)
-                1 -> SavingGroupsScreen(onQrScannerClick = onQrScannerClick)
-            }*/
+            when (selectedTabIndex) {
+                0 -> MeDebGroupScreen(onQrScannerClick = onQrScannerClick)
+                1 -> SavingGroupsScreen()
+            }
         }
 
         FloatingActionButton(
