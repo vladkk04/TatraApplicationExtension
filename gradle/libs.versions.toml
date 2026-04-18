@@ -11,8 +11,10 @@ coilCompose = "3.3.0"
 datastore = "1.2.0"
 nav3Core = "1.0.0"
 coreKtx = "1.17.0"
+cameraX = "1.3.1"
 coilGif = "3.3.0"
 kotlin = "2.2.21"
+mlkit = "17.3.0"
 hilt = "2.57.2"
 agp = "8.13.1"
 ksp = "2.3.2"
@@ -47,8 +49,15 @@ hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt"
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlin-serialization-json" }
 datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
+google-mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkit" }
+
 coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilCompose" }
 coil-gif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilGif" }
+
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraX"}
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX"}
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraX" }
 
 [plugins]
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

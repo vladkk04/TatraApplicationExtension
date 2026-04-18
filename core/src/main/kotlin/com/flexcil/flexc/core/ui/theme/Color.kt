@@ -2,31 +2,17 @@ package com.flexcil.flexc.core.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val DarkPrimaryColor = Color(0xFFFFCE99)
-val DarkPrimaryContainerColor = Color(0xFFCEA97F)
-val DarkOnPrimaryContainerColor = Color(0xFFB89B82)
+// === Tatra Banka Dark Palette ===
+val TatraDarkBackground = Color(0xFF14151A)     // Основний темний фон (як на TopBar / BottomBar)
+val TatraDarkSurface = Color(0xFF232429)        // Фон карток та блоків
+val TatraDarkSurfaceVariant = Color(0xFF2F3036) // Лінії, розділювачі (Dividers)
 
-val DarkSecondaryContainerColor = Color(0xFFFF9644)
+val TatraPrimaryBlue = Color(0xFF2B88F0)        // Фірмовий синій (кнопки, активні іконки)
+val TatraOnPrimary = Color(0xFFFFFFFF)          // Текст на синьому фоні
 
-val DarkSurfaceColor = Color(0xFFFFFDF1)
-val DarkOnSurfaceColor = Color(0xFFFFFDF1)
-val DarkSurfaceContainerLowColor = Color(0xFF562F00)
-val DarkSurfaceContainerHighest = Color(0xFF562F00)
-val DarkOnSurfaceVariant = Color(0xFFFFFDF1)
+val TatraTertiaryGreen = Color(0xFF00D67D)      // Зелений для позитивного балансу / графіків
 
-val LightPrimaryColor = Color.Red
-val LightPrimaryContainerColor = Color.Black
-val LightOnPrimaryContainerColor = Color.Black
+val TatraDarkTextPrimary = Color(0xFFFFFFFF)    // Основний білий текст
+val TatraDarkTextSecondary = Color(0xFF8B8D98)  // Сірий текст (описи, номери карток)
 
-val LightSecondaryContainerColor = Color.Black
-
-val LightSurfaceColor = Color.Black
-val LightOnSurfaceColor = Color.Black
-val LightSurfaceContainerLowColor = Color.Black
-val LightSurfaceContainerHighest = Color.Black
-val LightOnSurfaceVariant = Color.Red
-
-
-val LightTextColor = Color(0xFF000000)
-val DarkTextColor = Color(0xFFFFFFFF)
-
+val TatraError = Color(0xFFFF5252)              // Червоний для помилок

@@ -9,7 +9,7 @@ dependencies {
     implementation(projects.core)
     implementation(projects.navigation)
 
-    implementation(projects.feature.initial)
+    implementation(projects.feature.home)
 
     implementation(projects.domain)
     implementation(projects.data)

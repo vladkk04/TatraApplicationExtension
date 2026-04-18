@@ -11,5 +11,8 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.coil.gif)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.google.mlkit.barcode)
+    implementation(libs.androidx.camera.core)
+
     api(libs.datastore.preferences)
 }

@@ -6,7 +6,11 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.feature.initial)
+    implementation(projects.feature.home)
+    implementation(projects.feature.shared)
+    implementation(projects.feature.createGroup)
+    implementation(projects.feature.qrScanner)
+    implementation(projects.feature.savingGroups)
 
 
     implementation(projects.core)

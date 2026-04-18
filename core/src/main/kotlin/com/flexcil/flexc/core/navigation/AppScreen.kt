@@ -10,8 +10,15 @@ sealed interface AppScreen: NavKey {
     data object InitialScreen : AppScreen
 
     @Serializable
-    data object MenuScreen : AppScreen
+    data object SharedScreen : AppScreen
 
     @Serializable
-    data object GameScreen : AppScreen
+    data object QrScanner: AppScreen
+
+    @Serializable
+    data object NewGroup: AppScreen
+
+
+    @Serializable
+    data object SavingGroupsDetails: AppScreen
 }

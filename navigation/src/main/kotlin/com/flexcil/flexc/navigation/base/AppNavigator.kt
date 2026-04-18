@@ -9,18 +9,14 @@ import com.flexcil.flexc.core.navigation.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
-import kotlin.collections.removeFirstOrNull
-import kotlin.collections.removeLastOrNull
 
 @ActivityRetainedScoped
 class AppNavigator @Inject constructor() : Navigator {
     val backStack: NavBackStack<AppScreen> = NavBackStack(AppScreen.InitialScreen)
 
     override fun launchScreen(screen: AppScreen) {
-        backStack.add(screen)
-
-        if (backStack.size > 1) {
-            backStack.removeFirstOrNull()
+        if(!backStack.contains(screen)) {
+            backStack.add(screen)
         }
     }
 
