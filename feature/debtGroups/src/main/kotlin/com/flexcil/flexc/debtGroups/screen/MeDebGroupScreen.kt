@@ -22,9 +22,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Backpack
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -78,7 +80,8 @@ private val mockGroups = listOf(
 
 @Composable
 fun MeDebGroupScreen(
-    onQrScannerClick: () -> Unit
+    onQrScannerClick: () -> Unit,
+    onQrCreatorClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -127,7 +130,10 @@ fun MeDebGroupScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(mockGroups) { group ->
-            GroupCard(group = group)
+            GroupCard(
+                group = group,
+                onQrCreatorClick = onQrCreatorClick
+            )
         }
         item {
             Spacer(modifier = Modifier.height(80.dp)) // Padding for FAB
@@ -136,7 +142,10 @@ fun MeDebGroupScreen(
 }
 
 @Composable
-private fun GroupCard(group: GroupItem) {
+private fun GroupCard(
+    group: GroupItem,
+    onQrCreatorClick: () -> Unit
+) {
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFFE55D5D), Color(0xFF4A2B2B)))
@@ -202,12 +211,30 @@ private fun GroupCard(group: GroupItem) {
             val balancePrefix = if (group.balance > 0) "+ " else if (group.balance < 0) "- " else ""
             val formattedBalance = "${balancePrefix}${abs(group.balance).toInt()} EUR"
 
-            Text(
-                text = formattedBalance,
-                color = balanceColor,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Column(
+                horizontalAlignment = Alignment.End,
+                verticalArrangement = Arrangement.Center
+            ) {
+                IconButton(
+                    onClick = onQrCreatorClick,
+                    modifier = Modifier
+                        .offset(y = (-8).dp)
+                        .size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.QrCode,
+                        contentDescription = "Show QR Code",
+                        tint = Color(0xFF2B88F0), // A nice vibrant blue
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+                Text(
+                    text = formattedBalance,
+                    color = balanceColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
         }
     }
 }

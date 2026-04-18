@@ -18,4 +18,8 @@ class ShareViewModel @Inject constructor(
     fun navigateToCreateGroud() {
         navigator.launchScreen(AppScreen.NewGroup)
     }
+
+    fun navigateToQrCreator() {
+        navigator.launchScreen(AppScreen.QrCreator)
+    }
 }
