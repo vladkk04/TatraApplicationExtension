@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="21">
+      <module name="Featherfield.app" target="21" />
+      <module name="Featherfield.core.ui" target="21" />
+      <module name="Featherfield.data" target="21" />
+      <module name="Featherfield.domain" target="21" />
+      <module name="Featherfield.feature.game" target="21" />
+      <module name="Featherfield.feature.menu" target="21" />
+      <module name="Featherfield.feature.splash" target="21" />
+      <module name="Featherfield.navigation" target="21" />
+      <module name="MultiModuleTemplate.core.audio" target="21" />
+      <module name="MultiModuleTemplate.core.datastore" target="21" />
+      <module name="MultiModuleTemplate.core.haptics" target="21" />
+      <module name="MultiModuleTemplate.core.ui" target="21" />
+      <module name="MultiModuleTemplate.feature.webview" target="21" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
