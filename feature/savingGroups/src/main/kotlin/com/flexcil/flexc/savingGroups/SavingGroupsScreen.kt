@@ -25,9 +25,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.flexcil.flexc.core.navigation.AppScreen
-import com.flexcil.flexc.savingGroups.model.BackgroundStyle
-import com.flexcil.flexc.savingGroups.model.GroupItem
+import com.flexcil.flexc.core.model.BackgroundStyle
+import com.flexcil.flexc.core.model.GroupItem
 
 val mockGroups = listOf(
     GroupItem(

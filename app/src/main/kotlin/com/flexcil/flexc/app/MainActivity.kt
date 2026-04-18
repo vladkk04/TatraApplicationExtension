@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -18,8 +17,6 @@ import com.flexcil.flexc.app.component.BottomNavigationBar
 import com.flexcil.flexc.app.component.TopBar
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.ui.theme.ApplicationTheme
-import com.flexcil.flexc.debtGroups.screen.DepDetailsScreen
-import com.flexcil.flexc.debtGroups.screen.MeDebGroupScreen
 import com.flexcil.flexc.navigation.AppNavDisplay
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,14 +47,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 ) { contentPadding ->
-                    Box(
-                        Modifier.fillMaxSize()
-                            .padding(contentPadding)
-                    ) {
-                        DepDetailsScreen()
-
-                    }
-                   /* AppNavDisplay(
+                    AppNavDisplay(
                         backStack = { stack ->
                             visibleBars = !stack.contains(AppScreen.QrScanner)
                             changeTopBar = stack.contains(AppScreen.SharedScreen)
@@ -65,7 +55,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(contentPadding)
-                    )*/
+                    )
                 }
             }
         }
