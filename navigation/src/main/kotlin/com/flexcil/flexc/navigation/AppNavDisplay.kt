@@ -7,6 +7,8 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.flexcil.flexc.contribute.screen.PaymentScreen
+import com.flexcil.flexc.contribute.screen.TransactionScreen
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.createGroup.screen.CreateGroupScreen
 import com.flexcil.flexc.home.InitialScreen
@@ -37,6 +39,8 @@ fun AppNavDisplay(
             entry(AppScreen.QrScanner) { QrScannerScreen() }
             entry(AppScreen.NewGroup) { CreateGroupScreen() }
             entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen() }
+            entry(AppScreen.PaymentScreen) { PaymentScreen() }
+            entry(AppScreen.TransactionScreen) { TransactionScreen() }
         },
         modifier = modifier
     )
