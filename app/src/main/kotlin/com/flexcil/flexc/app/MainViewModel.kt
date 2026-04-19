@@ -24,7 +24,7 @@ class MainViewModel @Inject constructor(
     }
 
     fun navigatePayment() {
-        navigator.launchScreen(AppScreen.PaymentScreen)
+        navigator.launchScreen(AppScreen.PaymentScreen())
     }
 
 }

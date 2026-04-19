@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import com.flexcil.flexc.core.navigation.AppScreen
+import com.flexcil.flexc.core.navigation.LocalNavigator
 
 private val ChartGreen = Color(0xFF66E289)
 private val AvatarRed = Color(0xFFE55D5D)
@@ -65,6 +67,7 @@ data class ExpenseRequest(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavingsGroupsDetailsScreen() {
+    val navigator = LocalNavigator.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showRequestDialog by remember { mutableStateOf(false) }
     val requests = remember { mutableStateListOf<ExpenseRequest>() }
@@ -114,10 +117,38 @@ fun SavingsGroupsDetailsScreen() {
             }
         )
         Spacer(modifier = Modifier.height(32.dp))
+        val vladIban = "SK93 1100 0000 0029 3858 0850"
+        val partyIban = "SK11 1100 0000 0012 3456 7890"
+
         ContributionsSection(
             contributors = currentContributors,
             isExpense = selectedTab == 1,
-            onRequestExpense = { showRequestDialog = true }
+            onRequestExpense = {
+                navigator.launchScreen(
+                    AppScreen.PaymentScreen(
+                        beneficiaryName = "Vladyslav Klymiuk",
+                        iban = vladIban,
+                        amount = "",
+                        information = "Request from Party",
+                        payerName = "Party",
+                        payerIban = partyIban,
+                        payerBalance = "4 400,00 EUR"
+                    )
+                )
+            },
+            onContribute = {
+                navigator.launchScreen(
+                    AppScreen.PaymentScreen(
+                        beneficiaryName = "Party",
+                        iban = partyIban,
+                        amount = "",
+                        information = "Contribution to Savings Group",
+                        payerName = "Vladyslav Klymiuk",
+                        payerIban = vladIban,
+                        payerBalance = "2,47 EUR"
+                    )
+                )
+            }
         )
         Spacer(modifier = Modifier.height(40.dp))
     }
@@ -325,7 +356,8 @@ private fun SavingsTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
 private fun ContributionsSection(
     contributors: List<Contributor>,
     isExpense: Boolean,
-    onRequestExpense: () -> Unit
+    onRequestExpense: () -> Unit,
+    onContribute: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -344,7 +376,9 @@ private fun ContributionsSection(
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { onRequestExpense() }
+                modifier = Modifier.clickable { 
+                    if (isExpense) onRequestExpense() else onContribute()
+                }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))

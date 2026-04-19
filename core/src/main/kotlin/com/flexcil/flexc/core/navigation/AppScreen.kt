@@ -26,7 +26,7 @@ sealed interface AppScreen: NavKey {
 
 
     @Serializable
-    data object DebDetails: AppScreen
+    data class DebDetails(val groupName: String? = null) : AppScreen
 
     @Serializable
     data object SavingGroupsDetails: AppScreen
@@ -35,7 +35,15 @@ sealed interface AppScreen: NavKey {
     data object QrCreator: AppScreen
 
     @Serializable
-    data object PaymentScreen: AppScreen
+    data class PaymentScreen(
+        val beneficiaryName: String? = null,
+        val iban: String? = null,
+        val amount: String? = null,
+        val information: String? = null,
+        val payerName: String? = null,
+        val payerIban: String? = null,
+        val payerBalance: String? = null
+    ) : AppScreen
 
     @Serializable
     data object TransactionScreen: AppScreen

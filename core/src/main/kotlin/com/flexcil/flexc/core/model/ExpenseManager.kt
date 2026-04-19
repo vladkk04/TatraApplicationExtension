@@ -22,6 +22,17 @@ class ExpenseManager @Inject constructor() {
                 isCreatedByMe = false
             ),
             Expense(
+                title = "Pizza for everyone",
+                subtitle = "Me",
+                avatars = 3,
+                checkedAvatarIndex = 0,
+                isFirstAvatarEmpty = false,
+                amountValue = "210.00",
+                currency = "EUR",
+                buttonState = "YOURS",
+                isCreatedByMe = true
+            ),
+            Expense(
                 title = "The bill for yesterday’s party at the restaurant",
                 subtitle = "Vladyslav Dorosh",
                 avatars = 3,
