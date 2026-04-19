@@ -23,7 +23,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.Contacts
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Remove
@@ -55,6 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.flexcil.flexc.createGroup.CreateSpendingViewModel
+
 // --- Shared Custom Colors ---
 private val AvatarRed = Color(0xFF6B1E2C)
 private val AvatarOlive = Color(0xFF4C5D23)
@@ -82,6 +87,7 @@ data class Expense(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateSpendingScreen() {
+    val viewModel = hiltViewModel<CreateSpendingViewModel>()
     // Simulated members
     val availableGroupMembers = remember {
         listOf(
@@ -98,6 +104,7 @@ fun CreateSpendingScreen() {
     // NEW: States for Manual Expense
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
     var showManualExpenseModal by remember { mutableStateOf(false) }
+    var showTransactionPicker by remember { mutableStateOf(false) }
 
     // Bottom Sheet Logic (Debtors)
     if (showBottomSheet) {
@@ -126,6 +133,26 @@ fun CreateSpendingScreen() {
                 showManualExpenseModal = false
             }
         )
+    }
+
+    // NEW: Transaction Picker Bottom Sheet
+    if (showTransactionPicker) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            onDismissRequest = { showTransactionPicker = false },
+            sheetState = sheetState,
+            containerColor = Color(0xFF14151A) // Matching TransactionScreen background
+        ) {
+            TransactionPickerContent(
+                onTransactionSelected = { transaction ->
+                    selectedExpense = Expense(
+                        name = transaction.title,
+                        amount = transaction.amount
+                    )
+                    showTransactionPicker = false
+                }
+            )
+        }
     }
 
     Column(
@@ -183,7 +210,7 @@ fun CreateSpendingScreen() {
                     Spacer(modifier = Modifier.width(12.dp))
 
                     Button(
-                        onClick = { /* Add from transactions Action */ },
+                        onClick = { showTransactionPicker = true },
                         modifier = Modifier
                             .weight(1.3f)
                             .height(48.dp),
@@ -199,13 +226,28 @@ fun CreateSpendingScreen() {
             }
         } else {
             // State 2: Expense is selected
-            Text(
-                text = "Selected Expense",
-                color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Selected Expense",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Icon(
+                    imageVector = Icons.Rounded.Close,
+                    contentDescription = "Clear",
+                    tint = TatraBlue,
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { selectedExpense = null }
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             Row(
                 modifier = Modifier
@@ -259,22 +301,6 @@ fun CreateSpendingScreen() {
                 fontSize = 12.sp,
                 modifier = Modifier.padding(top = 8.dp, start = 4.dp)
             )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = { /* Add from transactions Action */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(10.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = TatraBlue,
-                    contentColor = Color.White
-                )
-            ) {
-                Text("From transactions", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-            }
         }
 
         Spacer(modifier = Modifier.height(32.dp))
@@ -328,7 +354,16 @@ fun CreateSpendingScreen() {
             modifier = Modifier.fillMaxWidth(),
         ) {
             Button(
-                onClick = { /* Apply Action */ },
+                onClick = {
+                    selectedExpense?.let { expense ->
+                        viewModel.addExpense(
+                            title = expense.name,
+                            amount = expense.amount,
+                            debtorsCount = selectedDebtorIds.size
+                        )
+                    }
+                },
+                enabled = selectedExpense != null && selectedDebtorIds.isNotEmpty(),
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
                     .height(48.dp),
@@ -438,9 +473,142 @@ fun AddManualExpenseDialog(
     }
 }
 
-// ... [Keep DebtorsBottomSheetContent, DebtorItemStyle, and SelectableMemberItem exactly as they were] ...
+// --- NEW: Transaction Picker Components (Similar to TransactionScreen) ---
 
-// Note: Ensure the bottom sheet and item composables from the previous step are pasted below this point!
+@Composable
+fun TransactionPickerContent(onTransactionSelected: (TransactionData) -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF14151A))
+    ) {
+        Text(
+            text = "Select from transactions",
+            color = Color.White,
+            fontSize = 20.sp,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(16.dp)
+        )
+
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            mockTransactionGroups.forEach { group ->
+                item {
+                    Text(
+                        text = group.date,
+                        color = Color(0xFF8B8D98),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
+                    )
+                }
+
+                items(group.transactions) { transaction ->
+                    TransactionPickerItem(transaction = transaction, onClick = { onTransactionSelected(transaction) })
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(1.dp)
+                            .padding(horizontal = 16.dp)
+                            .background(Color(0xFF2F3036).copy(alpha = 0.5f))
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TransactionPickerItem(transaction: TransactionData, onClick: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Red Minus Indicator
+        Box(
+            modifier = Modifier
+                .width(12.dp)
+                .height(2.dp)
+                .clip(RoundedCornerShape(1.dp))
+                .background(ExpenseRed)
+        )
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        // Transaction Details
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = transaction.title,
+                color = Color.White,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal,
+                maxLines = 1
+            )
+            Text(
+                text = transaction.details,
+                color = Color(0xFF8B8D98),
+                fontSize = 12.sp,
+                maxLines = 1
+            )
+        }
+
+        Spacer(modifier = Modifier.width(8.dp))
+
+        // Amount and Add Icon
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = "${transaction.amount} ${transaction.currency}",
+                color = ExpenseRed,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium
+            )
+            Spacer(modifier = Modifier.width(16.dp))
+            Icon(
+                imageVector = Icons.Rounded.Add,
+                contentDescription = "Add",
+                tint = TatraBlue,
+                modifier = Modifier
+                    .size(24.dp)
+                    .border(1.dp, TatraBlue, CircleShape)
+                    .padding(2.dp)
+            )
+        }
+    }
+}
+
+data class TransactionData(
+    val title: String,
+    val details: String,
+    val amount: String,
+    val currency: String = "EUR"
+)
+
+data class DateGroupData(
+    val date: String,
+    val transactions: List<TransactionData>
+)
+
+private val mockTransactionGroups = listOf(
+    DateGroupData(
+        date = "17 April 2026",
+        transactions = listOf(
+            TransactionData("KAUFLAND", "GP NÁKUP POS", "2,57")
+        )
+    ),
+    DateGroupData(
+        date = "16 April 2026",
+        transactions = listOf(
+            TransactionData("KAUFLAND", "GP NÁKUP POS", "1,85"),
+            TransactionData("Saint Coffee Kosice", "GP NÁKUP POS", "2,50"),
+            TransactionData("DO PIZZE", "GP NÁKUP POS", "1,50"),
+            TransactionData("Ubian.sk", "GP NÁKUP POS", "15,00")
+        )
+    )
+)
+
+// ... [Existing components below] ...
 
 @Composable
 fun DebtorsBottomSheetContent(
