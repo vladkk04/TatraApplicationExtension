@@ -71,6 +71,8 @@ private val TextGray = Color(0xFF8B8D98)
 private val DividerGray = Color(0xFF2F3036)
 private val ThickDividerBlack = Color(0xFF000000)
 
+
+//TODO CREATE PAYMENT SCREEN //TODO CREATE PAYMENT APPROVAL SYSTEM
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PaymentScreen(screen: AppScreen.PaymentScreen = AppScreen.PaymentScreen()) {
@@ -106,11 +108,8 @@ fun PaymentScreen(screen: AppScreen.PaymentScreen = AppScreen.PaymentScreen()) {
         modifier = Modifier
             .fillMaxSize()
             .background(AppBackground)
+            .padding(top = 12.dp)
     ) {
-        // --- Header ---
-        PaymentHeader()
-
-        // --- Scrollable Content ---
         Column(
             modifier = Modifier
                 .weight(1f)
