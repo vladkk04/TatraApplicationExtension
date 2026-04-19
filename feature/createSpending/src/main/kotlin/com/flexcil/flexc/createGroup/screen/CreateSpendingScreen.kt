@@ -23,21 +23,24 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.PersonAdd
+import androidx.compose.material.icons.outlined.ReceiptLong
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.Contacts
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
-import androidx.compose.material.icons.rounded.Remove
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -50,25 +53,29 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.flexcil.flexc.createGroup.CreateSpendingViewModel
 
-// --- Shared Custom Colors ---
+// --- Standard App Colors ---
+private val AppBackground = Color(0xFF14151A)
+private val CardBackground = Color(0xFF232429)
+private val InputBackground = Color(0xFF1C1D22)
+private val PrimaryBlue = Color(0xFF2B88F0)
+private val TextGray = Color(0xFF8B8D98)
+private val DarkCardBorder = Color(0xFF2F3036)
+private val ExpenseRed = Color(0xFFE55D5D)
+
+// --- Avatar Colors ---
 private val AvatarRed = Color(0xFF6B1E2C)
 private val AvatarOlive = Color(0xFF4C5D23)
 private val AvatarPurple = Color(0xFF2E235D)
 private val AvatarRose = Color(0xFFC08985)
-private val DarkCardBorder = Color(0xFF2F3036)
-private val InputBackground = Color(0xFF141416)
-private val TatraBlue = Color(0xFF3B82F6)
-private val ExpenseRed = Color(0xFFE53935) // Red color for expense amount
 
 // --- Data Models ---
 data class GroupMember(
@@ -88,7 +95,7 @@ data class Expense(
 @Composable
 fun CreateSpendingScreen() {
     val viewModel = hiltViewModel<CreateSpendingViewModel>()
-    // Simulated members
+
     val availableGroupMembers = remember {
         listOf(
             GroupMember("1", "Danyil Yatluk", "DY", "SK30 **** **** **** 3664", AvatarRose),
@@ -97,22 +104,19 @@ fun CreateSpendingScreen() {
         )
     }
 
-    // States
     var showBottomSheet by remember { mutableStateOf(false) }
     var selectedDebtorIds by remember { mutableStateOf(setOf<String>()) }
-
-    // NEW: States for Manual Expense
     var selectedExpense by remember { mutableStateOf<Expense?>(null) }
+
     var showManualExpenseModal by remember { mutableStateOf(false) }
     var showTransactionPicker by remember { mutableStateOf(false) }
 
-    // Bottom Sheet Logic (Debtors)
     if (showBottomSheet) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             onDismissRequest = { showBottomSheet = false },
             sheetState = sheetState,
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = AppBackground
         ) {
             DebtorsBottomSheetContent(
                 availableMembers = availableGroupMembers,
@@ -122,7 +126,6 @@ fun CreateSpendingScreen() {
         }
     }
 
-    // NEW: Dialog Logic (Manual Expense)
     if (showManualExpenseModal) {
         AddManualExpenseDialog(
             initialName = selectedExpense?.name ?: "",
@@ -135,13 +138,13 @@ fun CreateSpendingScreen() {
         )
     }
 
-    // NEW: Transaction Picker Bottom Sheet
+    // Transaction Picker Bottom Sheet
     if (showTransactionPicker) {
         val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
         ModalBottomSheet(
             onDismissRequest = { showTransactionPicker = false },
             sheetState = sheetState,
-            containerColor = Color(0xFF14151A) // Matching TransactionScreen background
+            containerColor = AppBackground
         ) {
             TransactionPickerContent(
                 onTransactionSelected = { transaction ->
@@ -155,203 +158,215 @@ fun CreateSpendingScreen() {
         }
     }
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(horizontal = 20.dp, vertical = 24.dp)
-            .verticalScroll(rememberScrollState())
+            .background(AppBackground)
     ) {
-        // --- Top Headers ---
-        Text(
-            text = "Adding New SubGroup",
-            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            fontSize = 12.sp,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        // --- Main Scrollable Content ---
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+        ) {
+            Spacer(modifier = Modifier.height(24.dp))
 
+            Text(
+                text = "Adding New SubGroup",
+                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                fontSize = 12.sp,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
 
-        // --- Expense Section (Toggle based on state) ---
-        if (selectedExpense == null) {
-            // State 1: Choose how to add
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(InputBackground)
-                    .padding(20.dp)
-            ) {
+            // --- Section 1: Expense Details ---
+            if (selectedExpense == null) {
                 Text(
-                    text = "Add spendings",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 18.sp,
+                    text = "Expense details",
+                    color = Color.White,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 20.dp)
+                    modifier = Modifier.padding(bottom = 16.dp)
                 )
 
+                // Option Cards
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    ActionCard(
+                        title = "Manual entry",
+                        icon = Icons.Outlined.Edit,
+                        modifier = Modifier.weight(1f),
+                        onClick = { showManualExpenseModal = true }
+                    )
+                    ActionCard(
+                        title = "From transactions",
+                        icon = Icons.Outlined.ReceiptLong,
+                        modifier = Modifier.weight(1f),
+                        onClick = { showTransactionPicker = true }
+                    )
+                }
+            } else {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Button(
-                        onClick = { showManualExpenseModal = true }, // Opens Modal
+                    Text(
+                        text = "Selected Expense",
+                        color = Color.White,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Icon(
+                        imageVector = Icons.Rounded.Close,
+                        contentDescription = "Clear",
+                        tint = PrimaryBlue,
                         modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = TatraBlue,
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Add Manually", fontSize = 14.sp, fontWeight = FontWeight.Medium)
-                    }
+                            .size(24.dp)
+                            .clickable { selectedExpense = null }
+                    )
+                }
 
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Button(
-                        onClick = { showTransactionPicker = true },
+                // Selected Expense Card
+                Surface(
+                    modifier = Modifier.fillMaxWidth().border(1.dp, DarkCardBorder, RoundedCornerShape(16.dp)),
+                    shape = RoundedCornerShape(16.dp),
+                    color = CardBackground,
+                ) {
+                    Row(
                         modifier = Modifier
-                            .weight(1.3f)
-                            .height(48.dp),
-                        shape = RoundedCornerShape(10.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = TatraBlue,
-                            contentColor = Color.White
-                        )
+                            .fillMaxWidth()
+                            .clickable { showManualExpenseModal = true }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("From transactions", fontSize = 14.sp, fontWeight = FontWeight.Medium)
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = selectedExpense!!.name,
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Made by you",
+                                color = TextGray,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        Column(horizontalAlignment = Alignment.End) {
+                            Row(verticalAlignment = Alignment.Bottom) {
+                                Text(
+                                    text = selectedExpense!!.amount,
+                                    color = ExpenseRed,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "EUR",
+                                    color = ExpenseRed,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.padding(bottom = 2.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Edit,
+                                    contentDescription = "Edit",
+                                    tint = PrimaryBlue,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Edit", color = PrimaryBlue, fontSize = 12.sp)
+                            }
+                        }
                     }
                 }
             }
-        } else {
-            // State 2: Expense is selected
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Selected Expense",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Icon(
-                    imageVector = Icons.Rounded.Close,
-                    contentDescription = "Clear",
-                    tint = TatraBlue,
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { selectedExpense = null }
-                )
-            }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
+            // --- Section 2: Split With (Debtors) ---
+            Text(
+                text = "Split with",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            // Add People Button
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .border(1.dp, DarkCardBorder, RoundedCornerShape(12.dp))
                     .background(InputBackground)
-                    .clickable { showManualExpenseModal = true } // Allows re-editing
+                    .clickable { showBottomSheet = true }
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Minus Icon indicator
-                Icon(
-                    imageVector = Icons.Rounded.Remove,
-                    contentDescription = null,
-                    tint = ExpenseRed,
-                    modifier = Modifier.size(20.dp)
-                )
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                // Details
-                Column(modifier = Modifier.weight(1f)) {
+                Box(
+                    modifier = Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(PrimaryBlue.copy(alpha = 0.1f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Outlined.PersonAdd, contentDescription = null, tint = PrimaryBlue, modifier = Modifier.size(20.dp))
+                }
+                Spacer(modifier = Modifier.width(16.dp))
+                Column {
                     Text(
-                        text = selectedExpense!!.name,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = if (selectedDebtorIds.isEmpty()) "Add people" else "${selectedDebtorIds.size} people selected",
+                        color = Color.White,
                         fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Medium
                     )
-                    Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Made by You", // Placeholder for creator
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                        text = "Choose who was involved",
+                        color = TextGray,
                         fontSize = 12.sp
                     )
                 }
-
-                // Amount
-                Text(
-                    text = "${selectedExpense!!.amount} EUR",
-                    color = ExpenseRed,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
             }
 
-            // Helpful text to show they can change it
-            Text(
-                text = "Tap the card to edit",
-                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                fontSize = 12.sp,
-                modifier = Modifier.padding(top = 8.dp, start = 4.dp)
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Selected Members List
+            val selectedMembersList = availableGroupMembers.filter { selectedDebtorIds.contains(it.id) }
+            if (selectedMembersList.isNotEmpty()) {
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    color = CardBackground
+                ) {
+                    Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                        selectedMembersList.forEachIndexed { index, debtor ->
+                            DebtorItemStyle(member = debtor)
+                            if (index < selectedMembersList.lastIndex) {
+                                HorizontalDivider(
+                                    color = DarkCardBorder,
+                                    modifier = Modifier.padding(horizontal = 16.dp)
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(100.dp)) // Safe space for bottom sticky button
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        // --- Debtors Section ---
-        Text(
-            text = "Debtors",
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        Row(
+        // --- Sticky Bottom Button ---
+        Box(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(12.dp))
-                .border(1.dp, DarkCardBorder, RoundedCornerShape(12.dp))
-                .background(InputBackground)
-                .clickable { showBottomSheet = true }
-                .padding(horizontal = 16.dp, vertical = 18.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = if (selectedDebtorIds.isEmpty()) "Add debtors" else "${selectedDebtorIds.size} debtors selected",
-                color = if (selectedDebtorIds.isEmpty()) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f) else MaterialTheme.colorScheme.onSurface,
-                fontSize = 16.sp
-            )
-            Icon(
-                imageVector = Icons.Rounded.Contacts,
-                contentDescription = "Add Debtors",
-                tint = TatraBlue
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        val selectedMembersList = availableGroupMembers.filter { selectedDebtorIds.contains(it.id) }
-        selectedMembersList.forEach { debtor ->
-            DebtorItemStyle(member = debtor)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-
-        Spacer(modifier = Modifier.weight(1f))
-        Spacer(modifier = Modifier.height(40.dp))
-
-        // --- Apply Button ---
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth(),
+                .background(AppBackground)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
             Button(
                 onClick = {
@@ -363,23 +378,60 @@ fun CreateSpendingScreen() {
                         )
                     }
                 },
-                enabled = selectedExpense != null && selectedDebtorIds.isNotEmpty(),
                 modifier = Modifier
-                    .fillMaxWidth(0.9f)
-                    .height(48.dp),
+                    .fillMaxWidth()
+                    .height(56.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = TatraBlue,
-                    contentColor = Color.White
-                )
+                    containerColor = PrimaryBlue,
+                    contentColor = Color.White,
+                    disabledContainerColor = DarkCardBorder
+                ),
+                enabled = selectedExpense != null && selectedDebtorIds.isNotEmpty()
             ) {
-                Text("Confirm", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text("Confirm", fontSize = 18.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
 }
 
-// --- NEW: Add Manual Expense Dialog Modal ---
+@Composable
+private fun ActionCard(
+    title: String,
+    icon: ImageVector,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier
+            .border(1.dp, DarkCardBorder, RoundedCornerShape(16.dp))
+            .height(100.dp),
+        shape = RoundedCornerShape(16.dp),
+        color = CardBackground,
+        onClick = onClick
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = PrimaryBlue,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = title,
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium
+            )
+        }
+    }
+}
+
 @Composable
 fun AddManualExpenseDialog(
     initialName: String,
@@ -394,38 +446,37 @@ fun AddManualExpenseDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .border(1.dp, DarkCardBorder, RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(20.dp))
+                .background(CardBackground)
                 .padding(24.dp)
         ) {
             Text(
-                text = "Add Manual Expense",
-                color = MaterialTheme.colorScheme.onSurface,
+                text = "Add manual expense",
+                color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = 24.dp)
             )
 
-            // Expense Name Input
             OutlinedTextField(
                 value = name,
                 onValueChange = { name = it },
-                label = { Text("Expense Name") },
+                label = { Text("What was it for?", color = TextGray) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = DarkCardBorder,
-                    focusedBorderColor = TatraBlue,
+                    focusedBorderColor = PrimaryBlue,
                     unfocusedContainerColor = InputBackground,
-                    focusedContainerColor = InputBackground
+                    focusedContainerColor = InputBackground,
+                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.White
                 )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Amount Input
             OutlinedTextField(
                 value = amount,
                 onValueChange = { newValue ->
@@ -433,54 +484,52 @@ fun AddManualExpenseDialog(
                         amount = newValue
                     }
                 },
-                label = { Text("Amount (EUR)") },
+                label = { Text("Amount (EUR)", color = TextGray) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 singleLine = true,
                 colors = OutlinedTextFieldDefaults.colors(
                     unfocusedBorderColor = DarkCardBorder,
-                    focusedBorderColor = TatraBlue,
+                    focusedBorderColor = PrimaryBlue,
                     unfocusedContainerColor = InputBackground,
-                    focusedContainerColor = InputBackground
+                    focusedContainerColor = InputBackground,
+                    unfocusedTextColor = Color.White,
+                    focusedTextColor = Color.White
                 )
             )
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.End
             ) {
                 TextButton(onClick = onDismiss) {
-                    Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("Cancel", color = TextGray, fontSize = 16.sp)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
                     onClick = {
-                        if (name.isNotBlank() && amount.isNotBlank()) {
-                            onSave(name, amount)
-                        }
+                        if (name.isNotBlank() && amount.isNotBlank()) onSave(name, amount)
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = TatraBlue),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryBlue),
                     shape = RoundedCornerShape(8.dp)
                 ) {
-                    Text("Save", fontWeight = FontWeight.Bold)
+                    Text("Save", fontWeight = FontWeight.Bold, fontSize = 16.sp)
                 }
             }
         }
     }
 }
 
-// --- NEW: Transaction Picker Components (Similar to TransactionScreen) ---
-
+// --- Transaction Picker Components ---
 @Composable
 fun TransactionPickerContent(onTransactionSelected: (TransactionData) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF14151A))
+            .background(AppBackground)
     ) {
         Text(
             text = "Select from transactions",
@@ -495,7 +544,7 @@ fun TransactionPickerContent(onTransactionSelected: (TransactionData) -> Unit) {
                 item {
                     Text(
                         text = group.date,
-                        color = Color(0xFF8B8D98),
+                        color = TextGray,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
@@ -509,7 +558,7 @@ fun TransactionPickerContent(onTransactionSelected: (TransactionData) -> Unit) {
                             .fillMaxWidth()
                             .height(1.dp)
                             .padding(horizontal = 16.dp)
-                            .background(Color(0xFF2F3036).copy(alpha = 0.5f))
+                            .background(DarkCardBorder.copy(alpha = 0.5f))
                     )
                 }
             }
@@ -526,90 +575,42 @@ private fun TransactionPickerItem(transaction: TransactionData, onClick: () -> U
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Red Minus Indicator
-        Box(
-            modifier = Modifier
-                .width(12.dp)
-                .height(2.dp)
-                .clip(RoundedCornerShape(1.dp))
-                .background(ExpenseRed)
-        )
-
+        Box(modifier = Modifier.width(12.dp).height(2.dp).clip(RoundedCornerShape(1.dp)).background(ExpenseRed))
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Transaction Details
         Column(modifier = Modifier.weight(1f)) {
-            Text(
-                text = transaction.title,
-                color = Color.White,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Normal,
-                maxLines = 1
-            )
-            Text(
-                text = transaction.details,
-                color = Color(0xFF8B8D98),
-                fontSize = 12.sp,
-                maxLines = 1
-            )
+            Text(text = transaction.title, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Normal, maxLines = 1)
+            Text(text = transaction.details, color = TextGray, fontSize = 12.sp, maxLines = 1)
         }
 
         Spacer(modifier = Modifier.width(8.dp))
-
-        // Amount and Add Icon
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = "${transaction.amount} ${transaction.currency}",
-                color = ExpenseRed,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium
-            )
+            Text(text = "${transaction.amount} ${transaction.currency}", color = ExpenseRed, fontSize = 15.sp, fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.width(16.dp))
             Icon(
                 imageVector = Icons.Rounded.Add,
                 contentDescription = "Add",
-                tint = TatraBlue,
-                modifier = Modifier
-                    .size(24.dp)
-                    .border(1.dp, TatraBlue, CircleShape)
-                    .padding(2.dp)
+                tint = PrimaryBlue,
+                modifier = Modifier.size(24.dp).border(1.dp, PrimaryBlue, CircleShape).padding(2.dp)
             )
         }
     }
 }
 
-data class TransactionData(
-    val title: String,
-    val details: String,
-    val amount: String,
-    val currency: String = "EUR"
-)
-
-data class DateGroupData(
-    val date: String,
-    val transactions: List<TransactionData>
-)
+data class TransactionData(val title: String, val details: String, val amount: String, val currency: String = "EUR")
+data class DateGroupData(val date: String, val transactions: List<TransactionData>)
 
 private val mockTransactionGroups = listOf(
-    DateGroupData(
-        date = "17 April 2026",
-        transactions = listOf(
-            TransactionData("KAUFLAND", "GP NÁKUP POS", "2,57")
-        )
-    ),
-    DateGroupData(
-        date = "16 April 2026",
-        transactions = listOf(
-            TransactionData("KAUFLAND", "GP NÁKUP POS", "1,85"),
-            TransactionData("Saint Coffee Kosice", "GP NÁKUP POS", "2,50"),
-            TransactionData("DO PIZZE", "GP NÁKUP POS", "1,50"),
-            TransactionData("Ubian.sk", "GP NÁKUP POS", "15,00")
-        )
-    )
+    DateGroupData("17 April 2026", listOf(TransactionData("KAUFLAND", "GP NÁKUP POS", "2.57"))),
+    DateGroupData("16 April 2026", listOf(
+        TransactionData("KAUFLAND", "GP NÁKUP POS", "1.85"),
+        TransactionData("Saint Coffee Kosice", "GP NÁKUP POS", "2.50"),
+        TransactionData("DO PIZZE", "GP NÁKUP POS", "1.50"),
+        TransactionData("Ubian.sk", "GP NÁKUP POS", "15.00")
+    ))
 )
 
-// ... [Existing components below] ...
-
+// --- Bottom Sheet & Member Components ---
 @Composable
 fun DebtorsBottomSheetContent(
     availableMembers: List<GroupMember>,
@@ -617,65 +618,55 @@ fun DebtorsBottomSheetContent(
     onSelectionChange: (Set<String>) -> Unit
 ) {
     var searchQuery by remember { mutableStateOf("") }
-
-    val filteredMembers = availableMembers.filter {
-        it.name.contains(searchQuery, ignoreCase = true) ||
-                it.detail.contains(searchQuery, ignoreCase = true)
-    }
+    val filteredMembers = availableMembers.filter { it.name.contains(searchQuery, ignoreCase = true) }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight(0.8f)
-            .padding(horizontal = 20.dp, vertical = 8.dp)
+        modifier = Modifier.fillMaxWidth().fillMaxHeight(0.85f).padding(horizontal = 20.dp, vertical = 8.dp)
     ) {
+        Text("Select participants", color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(bottom = 16.dp))
+
         OutlinedTextField(
             value = searchQuery,
             onValueChange = { searchQuery = it },
-            placeholder = { Text("Search members...", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)) },
-            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = MaterialTheme.colorScheme.onSurfaceVariant) },
+            placeholder = { Text("Search by name", color = TextGray) },
+            leadingIcon = { Icon(Icons.Rounded.Search, contentDescription = null, tint = TextGray) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
             singleLine = true,
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedBorderColor = DarkCardBorder,
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedContainerColor = InputBackground,
-                focusedContainerColor = InputBackground,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedBorderColor = DarkCardBorder, focusedBorderColor = PrimaryBlue,
+                unfocusedContainerColor = InputBackground, focusedContainerColor = InputBackground,
+                unfocusedTextColor = Color.White, focusedTextColor = Color.White,
             )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Add everyone",
-            color = TatraBlue,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier
-                .clickable {
-                    val newSelection = selectedIds + filteredMembers.map { it.id }.toSet()
-                    onSelectionChange(newSelection)
-                }
-                .padding(vertical = 8.dp, horizontal = 4.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth().clickable {
+                val newSelection = if (selectedIds.size == availableMembers.size) emptySet() else availableMembers.map { it.id }.toSet()
+                onSelectionChange(newSelection)
+            }.padding(vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text("Select All", color = PrimaryBlue, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Icon(
+                imageVector = if (selectedIds.size == availableMembers.size) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+                contentDescription = null, tint = PrimaryBlue
+            )
+        }
 
         LazyColumn {
             items(filteredMembers) { member ->
                 val isSelected = selectedIds.contains(member.id)
                 SelectableMemberItem(
-                    member = member,
-                    isSelected = isSelected,
+                    member = member, isSelected = isSelected,
                     onClick = {
                         val newSet = if (isSelected) selectedIds - member.id else selectedIds + member.id
                         onSelectionChange(newSet)
                     }
                 )
-                Spacer(modifier = Modifier.height(8.dp))
             }
         }
     }
@@ -684,50 +675,39 @@ fun DebtorsBottomSheetContent(
 @Composable
 private fun DebtorItemStyle(member: GroupMember) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(1.dp, DarkCardBorder, RoundedCornerShape(12.dp))
-            .background(InputBackground)
-            .padding(12.dp),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.size(48.dp).clip(CircleShape).background(member.avatarColor), contentAlignment = Alignment.Center) {
-            Text(member.initials, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(member.avatarColor), contentAlignment = Alignment.Center) {
+            Text(member.initials, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(member.name, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(member.name, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.height(2.dp))
-            Text(member.detail, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+            Text(member.detail, color = TextGray, fontSize = 12.sp)
         }
     }
 }
 
 @Composable
 private fun SelectableMemberItem(member: GroupMember, isSelected: Boolean, onClick: () -> Unit) {
-    val borderColor = if (isSelected) MaterialTheme.colorScheme.primary else DarkCardBorder
-    val borderWidth = if (isSelected) 2.dp else 1.dp
-
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .border(borderWidth, borderColor, RoundedCornerShape(12.dp))
-            .background(InputBackground)
-            .clickable(onClick = onClick)
-            .padding(12.dp),
+        modifier = Modifier.fillMaxWidth().clickable(onClick = onClick).padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Box(modifier = Modifier.size(48.dp).clip(CircleShape).background(member.avatarColor), contentAlignment = Alignment.Center) {
-            Text(member.initials, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+        Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(member.avatarColor), contentAlignment = Alignment.Center) {
+            Text(member.initials, color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Medium)
         }
         Spacer(modifier = Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
-            Text(member.name, color = MaterialTheme.colorScheme.onSurface, fontSize = 16.sp, fontWeight = FontWeight.Medium)
+            Text(member.name, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
             Spacer(modifier = Modifier.height(2.dp))
-            Text(member.detail, color = MaterialTheme.colorScheme.onSurfaceVariant, fontSize = 12.sp)
+            Text(member.detail, color = TextGray, fontSize = 12.sp)
         }
-        Icon(if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked, contentDescription = null, tint = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.size(24.dp))
+        Icon(
+            imageVector = if (isSelected) Icons.Rounded.CheckCircle else Icons.Rounded.RadioButtonUnchecked,
+            contentDescription = null, tint = if (isSelected) PrimaryBlue else TextGray, modifier = Modifier.size(24.dp)
+        )
     }
 }

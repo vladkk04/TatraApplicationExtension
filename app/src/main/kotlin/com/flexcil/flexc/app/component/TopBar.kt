@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ArrowBack
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,12 +23,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.flexcil.flexc.app.MainViewModel
 import com.flexcil.flexc.app.R
 
 @Composable
 fun TopBar(
-    isChanging: Boolean = false
+    isChanging: Boolean = false,
+    isBackButton: Boolean = false
 ) {
+    val viewModel = hiltViewModel<MainViewModel>()
+
     val backgroundColor = MaterialTheme.colorScheme.background
     val accentColor = MaterialTheme.colorScheme.primary
 
@@ -51,30 +57,45 @@ fun TopBar(
             }
         },
         navigationIcon = {
-            IconButton(
-                onClick = { /* Handle mail click */ },
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.Email,
-                    contentDescription = "Messages",
-                    tint = accentColor,
-                    modifier = Modifier.size(28.dp)
-                )
+            // FIX: If it IS a back button, show the arrow and call navigateBack
+            if (isBackButton) {
+                IconButton(
+                    onClick = viewModel::navigateBack, // <-- Corrected action
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
+                        contentDescription = "Go Back", // <-- Updated description
+                        tint = accentColor,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
+            } else {
+                // FIX: If it is NOT a back button, show the email icon and do mail click
+                IconButton(
+                    onClick = { /* Handle mail click */ }, // <-- Corrected action
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.Email,
+                        contentDescription = "Messages",
+                        tint = accentColor,
+                        modifier = Modifier.size(28.dp)
+                    )
+                }
             }
         },
         actions = {
-            if(!isChanging) {
-                Text(
-                    text = "Customize",
-                    color = accentColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier
-                        .clickable { /* Handle Customize click */ }
+            /* if(!isChanging) {
+                 Text(
+                     text = "Customize",
+                     color = accentColor,
+                     fontSize = 16.sp,
+                     fontWeight = FontWeight.Normal,
+                     modifier = Modifier
+                         .clickable { *//* Handle Customize click *//* }
                         .padding(end = 16.dp, start = 8.dp, top = 8.dp, bottom = 8.dp)
-                )
-            }
+                )*/
         }
     )
 }
