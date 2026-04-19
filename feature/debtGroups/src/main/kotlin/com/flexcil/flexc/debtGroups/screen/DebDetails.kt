@@ -1,5 +1,6 @@
 package com.flexcil.flexc.debtGroups.screen
 
+import android.R.attr.onClick
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,9 +24,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.flexcil.flexc.debtGroups.DebDetailsViewModel
 
 @Composable
 fun DepDetailsScreen() {
+    val viewModel = hiltViewModel<DebDetailsViewModel>()
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -35,12 +42,14 @@ fun DepDetailsScreen() {
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
-        ExpenseGroupList()
+        ExpenseGroupList(viewModel::navigateToPayment)
     }
 }
 
 @Composable
-private fun ExpenseGroupList() {
+private fun ExpenseGroupList(
+    onClick: () -> Unit = {}
+) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -71,7 +80,8 @@ private fun ExpenseGroupList() {
                 isFirstAvatarEmpty = true,
                 amountValue = "30.00",
                 currency = "EUR",
-                buttonState = ButtonState.PAY_NOW
+                buttonState = ButtonState.PAY_NOW,
+                onClick = onClick
             )
         }
     }
@@ -86,7 +96,8 @@ private fun ExpandableExpenseGroup(
     isFirstAvatarEmpty: Boolean = false,
     amountValue: String,
     currency: String,
-    buttonState: ButtonState
+    buttonState: ButtonState,
+    onClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -103,7 +114,8 @@ private fun ExpandableExpenseGroup(
             isFirstAvatarEmpty = isFirstAvatarEmpty,
             amountValue = amountValue,
             currency = currency,
-            buttonState = buttonState
+            buttonState = buttonState,
+            onClick = onClick
         )
 
         AnimatedVisibility(visible = isExpanded) {
@@ -121,7 +133,8 @@ private fun ExpenseSplitRow(
     isFirstAvatarEmpty: Boolean = false,
     amountValue: String,
     currency: String,
-    buttonState: ButtonState
+    buttonState: ButtonState,
+    onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -185,7 +198,10 @@ private fun ExpenseSplitRow(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ActionButton(state = buttonState)
+            ActionButton(
+                state = buttonState,
+                onClick = onClick
+            )
         }
     }
 }
@@ -339,7 +355,10 @@ enum class ButtonState {
 }
 
 @Composable
-private fun ActionButton(state: ButtonState) {
+private fun ActionButton(
+    state: ButtonState,
+    onClick: () -> Unit = {}
+) {
     val containerColor = when (state) {
         ButtonState.PAY_NOW -> Color(0xFF007AFF)
         ButtonState.PAID_CHECKED -> MaterialTheme.colorScheme.surfaceVariant
@@ -351,7 +370,7 @@ private fun ActionButton(state: ButtonState) {
     }
 
     Button(
-        onClick = { /* Handle action */ },
+        onClick = onClick,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,

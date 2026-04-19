@@ -19,4 +19,12 @@ class MainViewModel @Inject constructor(
         navigator.launchScreen(AppScreen.SharedScreen)
     }
 
+    fun navigateTransaction() {
+        navigator.launchScreen(AppScreen.TransactionScreen)
+    }
+
+    fun navigatePayment() {
+        navigator.launchScreen(AppScreen.PaymentScreen)
+    }
+
 }

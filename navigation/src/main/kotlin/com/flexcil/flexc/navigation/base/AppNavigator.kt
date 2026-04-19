@@ -15,9 +15,15 @@ class AppNavigator @Inject constructor() : Navigator {
     val backStack: NavBackStack<AppScreen> = NavBackStack(AppScreen.SharedScreen)
 
     override fun launchScreen(screen: AppScreen) {
-        if(!backStack.contains(screen)) {
-            backStack.add(screen)
+        if (backStack.lastOrNull() == screen) {
+            return
         }
+
+        if (backStack.contains(screen)) {
+            backStack.remove(screen)
+        }
+
+        backStack.add(screen)
     }
 
     override fun goBack() {

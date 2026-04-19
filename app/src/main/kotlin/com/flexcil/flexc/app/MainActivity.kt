@@ -42,7 +42,9 @@ class MainActivity : ComponentActivity() {
                         if (visibleBars) {
                             BottomNavigationBar(
                                 onHomeClick = viewModel::navigateHome,
-                                onSharedClick = viewModel::navigateShared
+                                onSharedClick = viewModel::navigateShared,
+                                onPaymentClick = viewModel::navigatePayment,
+                                onTransactionClick = viewModel::navigateTransaction
                             )
                         }
                     }

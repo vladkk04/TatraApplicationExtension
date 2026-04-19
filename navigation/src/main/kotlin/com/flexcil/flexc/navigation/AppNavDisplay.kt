@@ -12,8 +12,10 @@ import com.flexcil.flexc.contribute.screen.TransactionScreen
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.createGroup.screen.CreateGroupScreen
 import com.flexcil.flexc.createGroup.screen.CreateSpendingScreen
+import com.flexcil.flexc.debtGroups.screen.DepDetailsScreen
 import com.flexcil.flexc.home.InitialScreen
 import com.flexcil.flexc.navigation.base.AppNavigator
+import com.flexcil.flexc.qrCreator.QrCreatorScreen
 import com.flexcil.flexc.qrScanner.QrScannerScreen
 import com.flexcil.flexc.savingGroups.SavingsGroupsDetailsScreen
 import com.flexcil.flexc.shared.SharedScreen
@@ -39,7 +41,13 @@ fun AppNavDisplay(
             entry(AppScreen.SharedScreen) { SharedScreen() }
             entry(AppScreen.QrScanner) { QrScannerScreen() }
             entry(AppScreen.NewGroup) { CreateGroupScreen() }
-            entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen {} }
+            entry(AppScreen.SavingGroupsDetails) { 
+                SavingsGroupsDetailsScreen(onBackClick = { navigator.goBack() }) 
+            }
+            entry(AppScreen.QrCreator) {
+                QrCreatorScreen(onBackClick = { navigator.goBack() })
+            }
+            entry(AppScreen.DebDetails) { DepDetailsScreen()  }
             entry(AppScreen.PaymentScreen) { PaymentScreen() }
             entry(AppScreen.TransactionScreen) { TransactionScreen() }
             entry(AppScreen.CreateGroupScreen) { CreateGroupScreen() }

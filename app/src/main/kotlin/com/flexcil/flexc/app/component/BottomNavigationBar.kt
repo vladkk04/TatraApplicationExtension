@@ -47,7 +47,9 @@ import com.flexcil.flexc.app.R
 @Composable
 fun BottomNavigationBar(
     onHomeClick: () -> Unit,
-    onSharedClick: () -> Unit
+    onSharedClick: () -> Unit,
+    onPaymentClick: () -> Unit,
+    onTransactionClick: () -> Unit
 ) {
     val selectedColor = MaterialTheme.colorScheme.primary
     val unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -78,11 +80,7 @@ fun BottomNavigationBar(
                     selected = homeSelected,
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
-                    onClick = {
-                        sharedSelected = false
-                        homeSelected = true
-                        onHomeClick()
-                    }
+                    onClick = onHomeClick
                 )
 
                 BottomNavItem(
@@ -90,7 +88,8 @@ fun BottomNavigationBar(
                     label = "Transactions",
                     selected = false,
                     selectedColor = selectedColor,
-                    unselectedColor = unselectedColor
+                    unselectedColor = unselectedColor,
+                    onClick = onTransactionClick
                 )
             }
 
@@ -98,7 +97,8 @@ fun BottomNavigationBar(
                 icon = Icons.Outlined.CreditCard,
                 label = "Payment",
                 color = unselectedColor,
-                gradientTopColor = selectedColor
+                gradientTopColor = selectedColor,
+                onClick = onPaymentClick
             )
 
             Row(
@@ -175,7 +175,8 @@ private fun CenterPaymentItem(
     icon: ImageVector,
     label: String,
     color: Color,
-    gradientTopColor: Color
+    gradientTopColor: Color,
+    onClick: () -> Unit
 ) {
     val borderBrush = Brush.verticalGradient(
         colors = listOf(gradientTopColor, Color.Transparent),
@@ -190,7 +191,7 @@ private fun CenterPaymentItem(
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = null,
-                onClick = { /* Handle payment click */ }
+                onClick = onClick
             ),
         contentAlignment = Alignment.Center
     ) {
