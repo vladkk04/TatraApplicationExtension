@@ -173,7 +173,7 @@ fun CreateSpendingScreen() {
             Spacer(modifier = Modifier.height(24.dp))
 
             Text(
-                text = "Adding New SubGroup",
+                text = "Adding New Expense",
                 color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
                 fontSize = 12.sp,
                 modifier = Modifier.padding(bottom = 16.dp)

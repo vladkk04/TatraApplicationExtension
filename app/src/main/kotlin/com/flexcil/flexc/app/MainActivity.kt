@@ -78,7 +78,7 @@ class MainActivity : ComponentActivity() {
                                 AppScreen.TransactionScreen,
                                 AppScreen.PaymentScreen -> null
 
-                                AppScreen.CreateSpendingScreen -> "Adding New SubGroup"
+                                AppScreen.CreateSpendingScreen -> "Create Expense"
                                 AppScreen.QrScanner -> "Scan QR"
                                 else -> "Details" // Резервний заголовок для інших екранів
                             }
