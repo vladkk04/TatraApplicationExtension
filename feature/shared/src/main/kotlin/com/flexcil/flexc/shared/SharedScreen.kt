@@ -144,7 +144,7 @@ private fun SharedContent(
             }
 
             when (selectedTabIndex) {
-                0 -> MeDebGroupScreen(onQrScannerClick, onQrCreator, onDetailsClick = onDebDetails)
+                0 -> MeDebGroupScreen(onQrScannerClick, onQrCreator)
                 1 -> SavingGroupsScreen(
                     onQrCreatorClick = onQrCreator
                 )

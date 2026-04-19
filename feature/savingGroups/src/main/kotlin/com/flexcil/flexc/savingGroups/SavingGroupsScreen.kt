@@ -36,7 +36,7 @@ import com.flexcil.flexc.core.ui.component.IconPickerSheet
 
 val mockGroups = listOf(
     GroupItem(
-        title = "Party",
+        title = "Saving for Party",
         subtitle = "Вечірка",
         icon = Icons.Default.Group,
         usersCount = 4,
@@ -44,27 +44,11 @@ val mockGroups = listOf(
         backgroundStyle = BackgroundStyle.DARK_SOLID
     ),
     GroupItem(
-        title = "Food",
+        title = "Grocery Fund",
         subtitle = "Їжа",
         icon = Icons.Default.Restaurant,
         usersCount = 3,
         balance = 100.0,
-        backgroundStyle = BackgroundStyle.DARK_SOLID
-    ),
-    GroupItem(
-        title = "Weekend Trip",
-        subtitle = "Поїздка на вихідні",
-        icon = Icons.Default.Backpack,
-        usersCount = 3,
-        balance = 0.0,
-        backgroundStyle = BackgroundStyle.DARK_SOLID
-    ),
-    GroupItem(
-        title = "Lunch",
-        subtitle = "Обід",
-        icon = Icons.Default.Restaurant,
-        usersCount = 0,
-        balance = 0.0,
         backgroundStyle = BackgroundStyle.DARK_SOLID
     )
 )
@@ -115,7 +99,7 @@ fun SavingGroupsScreen(
                 onQrCreatorClick = onQrCreatorClick,
                 onClick = {
                     // Navigate to details specifically for the Party group
-                    if (group.title == "Party") {
+                    if (group.title == "Saving for Party") {
                         viewModel.navigateToSavingGroupDetails()
                     }
                 },
