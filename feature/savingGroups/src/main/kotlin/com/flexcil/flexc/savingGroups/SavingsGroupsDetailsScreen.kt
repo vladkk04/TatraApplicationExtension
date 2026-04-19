@@ -54,6 +54,11 @@ data class Contributor(
     val color: Color
 )
 
+object GlobalMockData {
+    val pendingRequests = mutableStateListOf<ExpenseRequest>()
+}
+
+
 data class ExpenseRequest(
     val id: String,
     val requesterName: String,
@@ -70,7 +75,16 @@ fun SavingsGroupsDetailsScreen() {
     val navigator = LocalNavigator.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showRequestDialog by remember { mutableStateOf(false) }
-    val requests = remember { mutableStateListOf<ExpenseRequest>() }
+    val requests = remember { 
+        mutableStateListOf<ExpenseRequest>(
+            ExpenseRequest(
+                id = "pending-1",
+                requesterName = "Vladyslav Klymiuk",
+                requesterInitials = "VK",
+                amount = 150.0
+            )
+        )
+    }
     
     val incomeContributors = remember {
         listOf(
@@ -125,11 +139,11 @@ fun SavingsGroupsDetailsScreen() {
             isExpense = selectedTab == 1,
             onRequestExpense = {
                 navigator.launchScreen(
-                    AppScreen.PaymentScreen(
+                    AppScreen.RequestExpenseScreen(
                         beneficiaryName = "Vladyslav Klymiuk",
                         iban = vladIban,
-                        amount = "",
-                        information = "Request from Party",
+                        amount = "150,00",
+                        information = "Request for Pizza",
                         payerName = "Party",
                         payerIban = partyIban,
                         payerBalance = "4 400,00 EUR"
@@ -208,7 +222,7 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
                     Text(
                         "${totalAmount.toInt()} EUR",
                         color = if (isExpense) Color(0xFFE55D5D) else Color.White,
-                        fontSize = 40.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -448,7 +462,7 @@ private fun RequestsSection(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            "Requests",
+            "Pending Approval",
             color = Color.White,
             fontSize = 18.sp,
             fontWeight = FontWeight.Bold

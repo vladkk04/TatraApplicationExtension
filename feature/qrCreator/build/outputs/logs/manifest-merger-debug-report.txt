@@ -1,16 +1,16 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml:2:13-83
-INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml:2:13-83
+ADDED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml:2:13-83
+INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml:2:13-83
 	package
-		INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml
+		INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml
 	xmlns:android
-		ADDED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml:2:23-81
+		ADDED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml:2:23-81
 uses-sdk
-INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml reason: use-sdk injection requested
-INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml
-INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml
+INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml reason: use-sdk injection requested
+INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml
+INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml
 	android:targetSdkVersion
-		INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml
+		INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml
 	android:minSdkVersion
-		INJECTED from /home/arkul/Downloads/TatraApplicationExtension/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest14357133778036493365.xml
+		INJECTED from /home/arkul/Documents/App/feature/qrCreator/build/intermediates/tmp/ProcessLibraryManifest/debug/tempAndroidManifest13134574091539863894.xml

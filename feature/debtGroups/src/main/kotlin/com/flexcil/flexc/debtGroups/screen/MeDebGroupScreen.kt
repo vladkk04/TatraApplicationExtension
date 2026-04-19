@@ -57,7 +57,7 @@ import kotlin.math.abs
 private val mockGroups = listOf(
     GroupItem(
         title = "Party Debts",
-        subtitle = "Вечірка",
+        subtitle = "Part Description",
         icon = Icons.Default.Group,
         usersCount = 4,
         balance = -10.0,
@@ -66,7 +66,7 @@ private val mockGroups = listOf(
     ),
     GroupItem(
         title = "Food Sharing",
-        subtitle = "Їжа",
+        subtitle = "Food Description",
         icon = Icons.Default.Restaurant,
         usersCount = 3,
         balance = -30.0,
