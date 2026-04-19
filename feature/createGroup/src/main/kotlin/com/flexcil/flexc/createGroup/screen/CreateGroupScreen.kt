@@ -105,6 +105,7 @@ enum class BeneficiarySheetScreen {
 fun CreateGroupScreen() {
     var selectedGroupType by remember { mutableStateOf(GroupType.DEBT_GROUP) }
     var groupName by remember { mutableStateOf("") }
+    var groupDescription by remember { mutableStateOf("") } // <-- НОВИЙ СТЕЙТ ДЛЯ ОПИСУ
 
     var currencyExpanded by remember { mutableStateOf(false) }
     val currencies = listOf("EUR", "CZK", "USD", "GBP", "PLN", "HUF")
@@ -209,6 +210,16 @@ fun CreateGroupScreen() {
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // --- НОВЕ ПОЛЕ: Description ---
+            CustomInputField(
+                label = "Description (Optional)",
+                value = groupDescription,
+                onValueChange = { groupDescription = it },
+                placeholder = "What is this group for?"
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
