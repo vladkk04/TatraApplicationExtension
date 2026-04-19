@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.flexcil.flexc.core.model.BackgroundStyle
 import com.flexcil.flexc.core.model.GroupItem
+import com.flexcil.flexc.core.model.GlobalMockData
 import com.flexcil.flexc.core.ui.component.IconPickerSheet
 
 val mockGroups = listOf(
@@ -59,7 +60,7 @@ fun SavingGroupsScreen(
     onQrCreatorClick: () -> Unit
 ) {
     var showIconPicker by remember { mutableStateOf(false) }
-    var currentGroups by remember { mutableStateOf(mockGroups) }
+    val currentGroups = GlobalMockData.savingGroups
     var groupToUpdate by remember { mutableStateOf<GroupItem?>(null) }
 
     if (showIconPicker) {
@@ -67,8 +68,9 @@ fun SavingGroupsScreen(
             onDismissRequest = { showIconPicker = false },
             onIconSelected = { newIcon ->
                 groupToUpdate?.let { target ->
-                    currentGroups = currentGroups.map {
-                        if (it.title == target.title) it.copy(icon = newIcon) else it
+                    val index = currentGroups.indexOfFirst { it.title == target.title }
+                    if (index != -1) {
+                        currentGroups[index] = currentGroups[index].copy(icon = newIcon)
                     }
                 }
             }
@@ -98,10 +100,7 @@ fun SavingGroupsScreen(
                 group = group,
                 onQrCreatorClick = onQrCreatorClick,
                 onClick = {
-                    // Navigate to details specifically for the Party group
-                    if (group.title == "Saving for Party") {
-                        viewModel.navigateToSavingGroupDetails()
-                    }
+                    viewModel.navigateToSavingGroupDetails(group.title)
                 },
                 onIconClick = {
                     groupToUpdate = group

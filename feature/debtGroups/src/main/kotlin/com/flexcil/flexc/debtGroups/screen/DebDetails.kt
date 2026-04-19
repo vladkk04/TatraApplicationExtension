@@ -35,22 +35,28 @@ fun DepDetailsScreen(groupName: String? = null) {
     val viewModel = hiltViewModel<DebDetailsViewModel>()
     val expenses by viewModel.expenses.collectAsState()
 
-    val filteredExpenses = if (groupName == "Food Sharing") {
-        listOf(
-            com.flexcil.flexc.core.model.Expense(
-                title = "Dinner at Sky City",
-                subtitle = "Oleksandr",
-                avatars = 3,
-                checkedAvatarIndex = null,
-                isFirstAvatarEmpty = true,
-                amountValue = "90.00",
-                currency = "EUR",
-                buttonState = "PAY_NOW",
-                isCreatedByMe = false
+    val isMockGroup = groupName == "Food Sharing" || groupName == "Party Debts"
+    val filteredExpenses = if (isMockGroup) {
+        if (groupName == "Food Sharing") {
+            listOf(
+                com.flexcil.flexc.core.model.Expense(
+                    title = "Dinner at Sky City",
+                    subtitle = "Oleksandr",
+                    avatars = 3,
+                    checkedAvatarIndex = null,
+                    isFirstAvatarEmpty = true,
+                    amountValue = "90.00",
+                    currency = "EUR",
+                    buttonState = "PAY_NOW",
+                    isCreatedByMe = false
+                )
             )
-        )
+        } else {
+            // Party Debts or others that have existing mock data
+            expenses
+        }
     } else {
-        expenses
+        emptyList()
     }
 
 

@@ -51,6 +51,7 @@ import com.flexcil.flexc.core.navigation.LocalNavigator
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.model.BackgroundStyle
 import com.flexcil.flexc.core.model.GroupItem
+import com.flexcil.flexc.core.model.GlobalMockData
 import com.flexcil.flexc.core.ui.component.IconPickerSheet
 import kotlin.math.abs
 
@@ -83,7 +84,7 @@ fun MeDebGroupScreen(
     val navigator = LocalNavigator.current
     val balance by viewModel.groupBalance.collectAsState()
     var showIconPicker by remember { mutableStateOf(false) }
-    var currentGroups by remember { mutableStateOf(mockGroups) }
+    val currentGroups = GlobalMockData.debtGroups
     var groupToUpdate by remember { mutableStateOf<GroupItem?>(null) }
 
     // Use derived state for Party Debts to make it responsive
@@ -98,8 +99,9 @@ fun MeDebGroupScreen(
             onDismissRequest = { showIconPicker = false },
             onIconSelected = { newIcon ->
                 groupToUpdate?.let { target ->
-                    currentGroups = currentGroups.map {
-                        if (it.title == target.title) it.copy(icon = newIcon) else it
+                    val index = currentGroups.indexOfFirst { it.title == target.title }
+                    if (index != -1) {
+                        currentGroups[index] = currentGroups[index].copy(icon = newIcon)
                     }
                 }
             }

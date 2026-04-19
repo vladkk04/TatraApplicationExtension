@@ -38,8 +38,13 @@ import androidx.compose.material.icons.rounded.HelpOutline
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.RadioButtonUnchecked
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import com.flexcil.flexc.core.model.BackgroundStyle
+import com.flexcil.flexc.core.model.GlobalMockData
+import com.flexcil.flexc.core.model.GroupItem
+import com.flexcil.flexc.core.navigation.LocalNavigator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -103,6 +108,7 @@ enum class BeneficiarySheetScreen {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateGroupScreen() {
+    val navigator = LocalNavigator.current
     var selectedGroupType by remember { mutableStateOf(GroupType.DEBT_GROUP) }
     var groupName by remember { mutableStateOf("") }
     var groupDescription by remember { mutableStateOf("") } // <-- НОВИЙ СТЕЙТ ДЛЯ ОПИСУ
@@ -250,7 +256,26 @@ fun CreateGroupScreen() {
         }
 
         Button(
-            onClick = { /* Handle Create Group */ },
+            onClick = {
+                if (groupName.isNotBlank()) {
+                    val newGroup = GroupItem(
+                        title = groupName,
+                        subtitle = groupDescription.ifBlank { "New group" },
+                        icon = Icons.Default.Group,
+                        usersCount = selectedMemberIds.size + 1, // +1 for the creator
+                        balance = 0.0,
+                        backgroundStyle = BackgroundStyle.DARK_SOLID
+                    )
+                    
+                    if (selectedGroupType == GroupType.DEBT_GROUP) {
+                        GlobalMockData.debtGroups.add(newGroup)
+                    } else {
+                        GlobalMockData.savingGroups.add(newGroup)
+                    }
+
+                    navigator.goBack()
+                }
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)

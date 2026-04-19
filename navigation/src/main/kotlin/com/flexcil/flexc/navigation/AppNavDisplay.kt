@@ -47,7 +47,7 @@ fun AppNavDisplay(
                 entry(AppScreen.PendingScreen) { PendingScreen() }
                 entry(AppScreen.QrScanner) { QrScannerScreen() }
                 entry(AppScreen.NewGroup) { CreateGroupScreen() }
-                entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen() }
+                entry<AppScreen.SavingGroupsDetails> { SavingsGroupsDetailsScreen(it.groupName) }
                 entry(AppScreen.QrCreator) { QrCreatorScreen() }
                 entry<AppScreen.DebDetails> { DepDetailsScreen(it.groupName) }
                 entry<AppScreen.PaymentScreen> { PaymentScreen(it) }
