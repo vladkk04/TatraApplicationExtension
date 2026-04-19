@@ -54,6 +54,11 @@ data class Contributor(
     val color: Color
 )
 
+object GlobalMockData {
+    val pendingRequests = mutableStateListOf<ExpenseRequest>()
+}
+
+
 data class ExpenseRequest(
     val id: String,
     val requesterName: String,

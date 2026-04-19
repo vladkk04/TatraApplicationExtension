@@ -261,13 +261,6 @@ private fun BeneficiarySection(
             )
             Row {
                 Text(
-                    text = "From transactions",
-                    color = PrimaryBlue,
-                    fontSize = 14.sp,
-                    modifier = Modifier.clickable { onFromTransactionsClick() }
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
                     text = "Scan IBAN/QR code",
                     color = PrimaryBlue,
                     fontSize = 14.sp,
@@ -281,6 +274,7 @@ private fun BeneficiarySection(
             label = "Choose beneficiary",
             value = beneficiaryName,
             onValueChange = onBeneficiaryNameChange,
+            alignTop = true,
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Outlined.Person,
@@ -300,6 +294,7 @@ private fun BeneficiarySection(
             label = "IBAN/Foreign account number",
             isRequired = true,
             value = iban,
+            alignTop = true,
             onValueChange = onIbanChange
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -307,6 +302,7 @@ private fun BeneficiarySection(
         PaymentInputField(
             label = "Beneficiary name",
             value = beneficiaryName,
+            alignTop = true,
             onValueChange = onBeneficiaryNameChange
         )
         Spacer(modifier = Modifier.height(12.dp))
@@ -619,32 +615,20 @@ private fun PaymentInputField(
             .padding(horizontal = 16.dp, vertical = if (alignTop) 16.dp else 0.dp),
         contentAlignment = if (alignTop) Alignment.TopStart else Alignment.CenterStart
     ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = if (alignTop) Alignment.Top else Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            // Label with optional blue asterisk
-            Text(
-                text = buildAnnotatedString {
-                    append(label)
-                    if (isRequired) {
-                        withStyle(style = SpanStyle(color = PrimaryBlue)) {
-                            append(" *")
+        if (alignTop) {
+            // Логіка для ВЕЛИКОГО поля (наприклад, Information for beneficiary)
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = buildAnnotatedString {
+                        append(label)
+                        if (isRequired) {
+                            withStyle(style = SpanStyle(color = PrimaryBlue)) { append(" *") }
                         }
-                    }
-                },
-                color = TextGray,
-                fontSize = 16.sp,
-                modifier = Modifier.padding(top = if (alignTop) 2.dp else 0.dp)
-            )
-
-            // Right side Content (TextField and/or Icon)
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f),
-                horizontalArrangement = Arrangement.End
-            ) {
+                    },
+                    color = TextGray,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
                 BasicTextField(
                     value = value,
                     onValueChange = onValueChange,
@@ -652,20 +636,64 @@ private fun PaymentInputField(
                         color = Color.White,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.End
+                        textAlign = TextAlign.Start // Текст починається зліва
                     ),
                     cursorBrush = SolidColor(PrimaryBlue),
-                    modifier = Modifier.weight(1f),
-                    decorationBox = { innerTextField ->
-                        Box(contentAlignment = Alignment.CenterEnd) {
-                            innerTextField()
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        } else {
+            // Логіка для ЗВИЧАЙНОГО поля (один рядок)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Label зліва
+                Text(
+                    text = buildAnnotatedString {
+                        append(label)
+                        if (isRequired) {
+                            withStyle(style = SpanStyle(color = PrimaryBlue)) { append(" *") }
                         }
-                    }
+                    },
+                    color = TextGray,
+                    fontSize = 16.sp,
+                    modifier = Modifier.weight(1f, fill = false) // Не займає весь простір
                 )
 
-                if (trailingIcon != null) {
-                    Spacer(modifier = Modifier.width(12.dp))
-                    trailingIcon()
+                Spacer(modifier = Modifier.width(16.dp))
+
+                // Поле вводу справа
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    BasicTextField(
+                        value = value,
+                        onValueChange = onValueChange,
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            color = Color.White,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.End // Текст притиснутий до правого краю
+                        ),
+                        cursorBrush = SolidColor(PrimaryBlue),
+                        modifier = Modifier.weight(1f),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.CenterEnd) {
+                                innerTextField()
+                            }
+                        }
+                    )
+
+                    // Якщо є іконка (наприклад календарик або дропдаун), додаємо її справа
+                    if (trailingIcon != null) {
+                        Spacer(modifier = Modifier.width(12.dp))
+                        trailingIcon()
+                    }
                 }
             }
         }
