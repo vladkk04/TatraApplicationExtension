@@ -1,5 +1,6 @@
 package com.flexcil.flexc.debtGroups.screen
 
+import java.util.*
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,12 +25,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import java.util.Locale
 import com.flexcil.flexc.debtGroups.DebDetailsViewModel
 
 @Composable
 fun DepDetailsScreen() {
 
     val viewModel = hiltViewModel<DebDetailsViewModel>()
+    val expenses by viewModel.expenses.collectAsState()
 
 
     Column(
@@ -69,44 +72,41 @@ fun DepDetailsScreen() {
             )
         }
 
-        ExpenseGroupList()
+        ExpenseGroupList(expenses)
     }
 }
 
 @Composable
-private fun ExpenseGroupList() {
+private fun ExpenseGroupList(expenses: List<com.flexcil.flexc.core.model.Expense>) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface
     ) {
         Column(modifier = Modifier.padding(vertical = 8.dp)) {
-            ExpandableExpenseGroup(
-                title = "The bill for yesterday’s party at the restaurant",
-                subtitle = "Paid",
-                avatars = 3,
-                checkedAvatarIndex = 1,
-                isFirstAvatarEmpty = false,
-                amountValue = "120.00",
-                currency = "EUR",
-                buttonState = ButtonState.PAID_CHECKED
-            )
+            expenses.forEachIndexed { index, expense ->
+                ExpandableExpenseGroup(
+                    title = expense.title,
+                    subtitle = expense.subtitle,
+                    avatars = expense.avatars,
+                    checkedAvatarIndex = expense.checkedAvatarIndex,
+                    isFirstAvatarEmpty = expense.isFirstAvatarEmpty,
+                    amountValue = expense.amountValue,
+                    currency = expense.currency,
+                    buttonState = when {
+                        expense.isCreatedByMe -> ButtonState.YOURS
+                        expense.buttonState == "PAID_CHECKED" -> ButtonState.PAID_CHECKED
+                        else -> ButtonState.PAY_NOW
+                    }
+                )
 
-            HorizontalDivider(
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            ExpandableExpenseGroup(
-                title = "BOLT",
-                subtitle = "Created by Danyil Yatluk",
-                avatars = 3,
-                checkedAvatarIndex = null,
-                isFirstAvatarEmpty = true,
-                amountValue = "30.00",
-                currency = "EUR",
-                buttonState = ButtonState.PAY_NOW
-            )
+                if (index < expenses.size - 1) {
+                    HorizontalDivider(
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
+                        modifier = Modifier.padding(horizontal = 16.dp)
+                    )
+                }
+            }
         }
     }
 }
@@ -141,7 +141,17 @@ private fun ExpandableExpenseGroup(
         )
 
         AnimatedVisibility(visible = isExpanded) {
-            DebtorsStatusSection()
+            val amountPerPersonValue = try {
+                val total = amountValue.replace(",", ".").toDouble()
+                String.format(Locale.US, "%.2f %s", total / avatars, currency)
+            } catch (e: Exception) {
+                "0.00 $currency"
+            }
+            DebtorsStatusSection(
+                amountPerPerson = amountPerPersonValue,
+                creatorName = subtitle ?: "",
+                isMePaid = buttonState == ButtonState.PAID_CHECKED || buttonState == ButtonState.YOURS
+            )
         }
     }
 }
@@ -225,7 +235,7 @@ private fun ExpenseSplitRow(
 }
 
 @Composable
-private fun DebtorsStatusSection() {
+private fun DebtorsStatusSection(amountPerPerson: String, creatorName: String, isMePaid: Boolean) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -236,16 +246,16 @@ private fun DebtorsStatusSection() {
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        DebtorStatusItem("Danyil Yatluk", hasPaid = true)
+        DebtorStatusItem("Danyil Yatluk", hasPaid = isMePaid, amountPerPerson = amountPerPerson)
         Spacer(modifier = Modifier.height(8.dp))
-        DebtorStatusItem("Vladyslav Dorosh", hasPaid = false)
+        DebtorStatusItem("Vladyslav Dorosh", hasPaid = creatorName == "Vladyslav Dorosh", amountPerPerson = amountPerPerson)
         Spacer(modifier = Modifier.height(8.dp))
-        DebtorStatusItem("Daniil Dryzhov", hasPaid = true)
+        DebtorStatusItem("Daniil Dryzhov", hasPaid = creatorName == "Daniil Dryzhov", amountPerPerson = amountPerPerson)
     }
 }
 
 @Composable
-private fun DebtorStatusItem(name: String, hasPaid: Boolean) {
+private fun DebtorStatusItem(name: String, hasPaid: Boolean, amountPerPerson: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -271,13 +281,19 @@ private fun DebtorStatusItem(name: String, hasPaid: Boolean) {
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        Text(
-            text = name,
-            color = Color.White,
-            fontSize = 14.sp,
-            fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = name,
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Medium,
+            )
+            Text(
+                text = amountPerPerson,
+                color = Color.Gray,
+                fontSize = 12.sp,
+            )
+        }
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             if (hasPaid) {
@@ -369,7 +385,7 @@ private fun CustomOverlappingAvatars(
 }
 
 enum class ButtonState {
-    PAID_CHECKED, PAY_NOW
+    PAID_CHECKED, PAY_NOW, YOURS
 }
 
 @Composable
@@ -379,16 +395,16 @@ private fun ActionButton(state: ButtonState) {
 
     val containerColor = when (state) {
         ButtonState.PAY_NOW -> Color(0xFF007AFF)
-        ButtonState.PAID_CHECKED -> MaterialTheme.colorScheme.surfaceVariant
+        ButtonState.PAID_CHECKED, ButtonState.YOURS -> MaterialTheme.colorScheme.surfaceVariant
     }
 
     val contentColor = when (state) {
         ButtonState.PAY_NOW -> Color.White
-        ButtonState.PAID_CHECKED -> MaterialTheme.colorScheme.onSurfaceVariant
+        ButtonState.PAID_CHECKED, ButtonState.YOURS -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 
     Button(
-        onClick = viewModel::navigateToPayment,
+        onClick = { if (state == ButtonState.PAY_NOW) viewModel.navigateToPayment() },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
@@ -397,14 +413,19 @@ private fun ActionButton(state: ButtonState) {
         modifier = Modifier
             .height(34.dp)
             .width(88.dp),
-        contentPadding = PaddingValues(0.dp)
+        contentPadding = PaddingValues(0.dp),
+        enabled = state == ButtonState.PAY_NOW
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = if (state == ButtonState.PAY_NOW) "Pay Now" else "Paid",
+                text = when (state) {
+                    ButtonState.PAY_NOW -> "Pay Now"
+                    ButtonState.PAID_CHECKED -> "Paid"
+                    ButtonState.YOURS -> "Yours"
+                },
                 fontSize = 13.sp,
                 fontWeight = FontWeight.Medium
             )
