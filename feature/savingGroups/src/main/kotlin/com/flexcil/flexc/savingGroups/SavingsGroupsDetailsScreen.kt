@@ -208,7 +208,7 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
                     Text(
                         "${totalAmount.toInt()} EUR",
                         color = if (isExpense) Color(0xFFE55D5D) else Color.White,
-                        fontSize = 40.sp,
+                        fontSize = 32.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }

@@ -171,7 +171,7 @@ private fun AccountsSection() {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "SK93 1100 0000 0029 3858 0850",
+                    text = "SK00 0000 0000 0000 0000 0000",
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )

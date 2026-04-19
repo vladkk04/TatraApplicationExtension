@@ -37,7 +37,7 @@ import com.flexcil.flexc.core.ui.component.IconPickerSheet
 val mockGroups = listOf(
     GroupItem(
         title = "Saving for Party",
-        subtitle = "Вечірка",
+        subtitle = "Saving for party description",
         icon = Icons.Default.Group,
         usersCount = 4,
         balance = 4400.0,
@@ -45,7 +45,7 @@ val mockGroups = listOf(
     ),
     GroupItem(
         title = "Grocery Fund",
-        subtitle = "Їжа",
+        subtitle = "Grocery description",
         icon = Icons.Default.Restaurant,
         usersCount = 3,
         balance = 100.0,
