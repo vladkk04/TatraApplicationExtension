@@ -1,6 +1,5 @@
 package com.flexcil.flexc.debtGroups.screen
 
-import android.R.attr.onClick
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,15 +23,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.flexcil.flexc.debtGroups.DebDetailsViewModel
 
 @Composable
 fun DepDetailsScreen() {
-    val viewModel = hiltViewModel<DebDetailsViewModel>()
-
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -42,14 +35,39 @@ fun DepDetailsScreen() {
     ) {
         Spacer(modifier = Modifier.height(32.dp))
 
-        ExpenseGroupList(viewModel::navigateToPayment)
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp)
+                .padding(bottom = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Expenses",
+                color = Color.White,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold
+            )
+
+            Text(
+                text = "Add",
+                color = Color(0xFF007AFF),
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium,
+                modifier = Modifier
+                    .clickable {
+                    }
+                    .padding(4.dp)
+            )
+        }
+
+        ExpenseGroupList()
     }
 }
 
 @Composable
-private fun ExpenseGroupList(
-    onClick: () -> Unit = {}
-) {
+private fun ExpenseGroupList() {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
@@ -80,8 +98,7 @@ private fun ExpenseGroupList(
                 isFirstAvatarEmpty = true,
                 amountValue = "30.00",
                 currency = "EUR",
-                buttonState = ButtonState.PAY_NOW,
-                onClick = onClick
+                buttonState = ButtonState.PAY_NOW
             )
         }
     }
@@ -96,8 +113,7 @@ private fun ExpandableExpenseGroup(
     isFirstAvatarEmpty: Boolean = false,
     amountValue: String,
     currency: String,
-    buttonState: ButtonState,
-    onClick: () -> Unit = {}
+    buttonState: ButtonState
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -114,8 +130,7 @@ private fun ExpandableExpenseGroup(
             isFirstAvatarEmpty = isFirstAvatarEmpty,
             amountValue = amountValue,
             currency = currency,
-            buttonState = buttonState,
-            onClick = onClick
+            buttonState = buttonState
         )
 
         AnimatedVisibility(visible = isExpanded) {
@@ -133,8 +148,7 @@ private fun ExpenseSplitRow(
     isFirstAvatarEmpty: Boolean = false,
     amountValue: String,
     currency: String,
-    buttonState: ButtonState,
-    onClick: () -> Unit
+    buttonState: ButtonState
 ) {
     Row(
         modifier = Modifier
@@ -198,10 +212,7 @@ private fun ExpenseSplitRow(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ActionButton(
-                state = buttonState,
-                onClick = onClick
-            )
+            ActionButton(state = buttonState)
         }
     }
 }
@@ -222,7 +233,7 @@ private fun DebtorsStatusSection() {
         Spacer(modifier = Modifier.height(8.dp))
         DebtorStatusItem("Vladyslav Dorosh", hasPaid = false)
         Spacer(modifier = Modifier.height(8.dp))
-        DebtorStatusItem("Sarah Miller", hasPaid = true)
+        DebtorStatusItem("Daniil Dryzhov", hasPaid = true)
     }
 }
 
@@ -355,10 +366,7 @@ enum class ButtonState {
 }
 
 @Composable
-private fun ActionButton(
-    state: ButtonState,
-    onClick: () -> Unit = {}
-) {
+private fun ActionButton(state: ButtonState) {
     val containerColor = when (state) {
         ButtonState.PAY_NOW -> Color(0xFF007AFF)
         ButtonState.PAID_CHECKED -> MaterialTheme.colorScheme.surfaceVariant
@@ -370,7 +378,7 @@ private fun ActionButton(
     }
 
     Button(
-        onClick = onClick,
+        onClick = { /* Handle action */ },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
