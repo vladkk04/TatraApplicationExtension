@@ -117,13 +117,13 @@ fun BottomNavigationBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BottomNavItem(
-                    painter = painterResource(R.drawable.share), // Переконайтеся, що імпорт R правильний
-                    label = "Shared",
-                    selected = selectedTab == "Shared",
+                    painter = painterResource(R.drawable.share),
+                    label = "Offers",
+                    selected = selectedTab == "Offers",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
                     onClick = {
-                        selectedTab = "Shared"
+                        selectedTab = "Offers"
                         onSharedClick()
                     }
                 )

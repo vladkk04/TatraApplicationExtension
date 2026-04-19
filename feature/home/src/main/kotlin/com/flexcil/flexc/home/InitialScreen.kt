@@ -45,6 +45,9 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
@@ -64,19 +67,35 @@ private fun InitialContent() {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
+        Spacer(modifier = Modifier.height(12.dp))
 
         PendingInvitationsBanner(onClick = viewModel::navigateToPendingScreen)
 
         AccountsSection()
 
+        Spacer(modifier = Modifier.height(8.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(8.dp)
-                .background(Color.Black.copy(alpha = 0.5f))
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
         )
+        Spacer(modifier = Modifier.height(16.dp))
 
         CardsSection()
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.outline.copy(alpha = 0.5f))
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        SavingsSection()
+
+        Spacer(modifier = Modifier.height(100.dp))
     }
 }
 
@@ -145,12 +164,12 @@ private fun AccountsSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp) // Трохи змінив padding, бо банер вже має свій
+            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = "Accounts",
             color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 20.sp,
+            fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
         )
@@ -166,21 +185,26 @@ private fun AccountsSection() {
                 Text(
                     text = "Klymiuk Vladyslav",
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "SK00 0000 0000 0000 0000 0000",
+                    text = buildAnnotatedString {
+                        append("SK93 ")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("1100 ")
+                        }
+                        append("0000 00")
+                        withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
+                            append("29 3858 0850")
+                        }
+                    },
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    fontSize = 14.sp
+                    fontSize = 13.sp
                 )
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 16.dp),
-                    color = MaterialTheme.colorScheme.outline,
-                    thickness = 1.dp
-                )
+                Spacer(modifier = Modifier.height(32.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -193,12 +217,12 @@ private fun AccountsSection() {
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(8.dp))
                         Row(verticalAlignment = Alignment.Bottom) {
                             Text(
                                 text = "2,47",
                                 color = MaterialTheme.colorScheme.onSurface,
-                                fontSize = 24.sp,
+                                fontSize = 28.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
@@ -206,12 +230,12 @@ private fun AccountsSection() {
                                 color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(bottom = 2.dp)
+                                modifier = Modifier.padding(bottom = 4.dp)
                             )
                         }
                     }
 
-                    BalanceGraph(modifier = Modifier.width(100.dp).height(40.dp))
+                    BalanceGraph(modifier = Modifier.width(110.dp).height(50.dp))
                 }
             }
         }
@@ -223,19 +247,19 @@ private fun CardsSection() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 20.dp)
+            .padding(vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = "Cards",
                 color = MaterialTheme.colorScheme.onSurface,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
@@ -246,13 +270,13 @@ private fun CardsSection() {
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             MockCreditCard()
@@ -265,14 +289,14 @@ private fun CardsSection() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
-            Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
-            Spacer(modifier = Modifier.width(6.dp))
-            Box(modifier = Modifier.size(6.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)))
+            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(MaterialTheme.colorScheme.primary))
+            Spacer(modifier = Modifier.width(8.dp))
+            Box(modifier = Modifier.size(8.dp).clip(CircleShape).background(MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)))
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
 
-        Column(modifier = Modifier.padding(horizontal = 20.dp)) {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
@@ -280,14 +304,14 @@ private fun CardsSection() {
                 Text(
                     text = "Vladyslav Klymiuk",
                     color = MaterialTheme.colorScheme.onSurface,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Row(verticalAlignment = Alignment.Bottom) {
                     Text(
                         text = "2,47",
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 16.sp,
+                        fontSize = 18.sp,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
@@ -295,7 +319,7 @@ private fun CardsSection() {
                         color = MaterialTheme.colorScheme.onSurface,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 1.dp)
+                        modifier = Modifier.padding(bottom = 2.dp)
                     )
                 }
             }
@@ -317,7 +341,7 @@ private fun CardsSection() {
             }
 
             HorizontalDivider(
-                modifier = Modifier.padding(vertical = 20.dp),
+                modifier = Modifier.padding(vertical = 24.dp),
                 color = MaterialTheme.colorScheme.outline,
                 thickness = 1.dp
             )
@@ -328,6 +352,68 @@ private fun CardsSection() {
             ) {
                 ActionButton(icon = Icons.Outlined.ShoppingCart, label = "E-commerce")
                 ActionButton(icon = Icons.Outlined.Star, label = "Card benefits")
+            }
+        }
+    }
+}
+
+@Composable
+private fun SavingsSection() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Savings",
+                color = MaterialTheme.colorScheme.onSurface,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold
+            )
+            Text(
+                text = "List of savings",
+                color = MaterialTheme.colorScheme.primary,
+                fontSize = 14.sp,
+                modifier = Modifier.clickable { /* Handle click */ }
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(16.dp))
+        
+        // Mock saving item matching the style
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.surface,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(20.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "Saving for Party",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "4 400 EUR",
+                        color = MaterialTheme.colorScheme.tertiary,
+                        fontSize = 14.sp
+                    )
+                }
+                Icon(
+                    imageVector = Icons.Rounded.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
             }
         }
     }

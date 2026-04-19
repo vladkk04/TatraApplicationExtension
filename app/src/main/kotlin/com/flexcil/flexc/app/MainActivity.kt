@@ -31,8 +31,8 @@ class MainActivity : ComponentActivity() {
 
             // Змінна тепер може бути null. За замовчуванням null (щоб показувати лого)
             var topBarTitle by remember { mutableStateOf<String?>(null) }
-
             var isBackButton by remember { mutableStateOf(false) }
+            var showCustomize by remember { mutableStateOf(false) }
 
             ApplicationTheme {
                 Scaffold(
@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
                         if (visibleBars) {
                             TopBar(
                                 title = topBarTitle,
-                                isBackButton = isBackButton
+                                isBackButton = isBackButton,
+                                showCustomize = showCustomize,
+                                onCustomizeClick = { /* Logic for customization */ }
                             )
                         }
                     },
@@ -67,6 +69,8 @@ class MainActivity : ComponentActivity() {
                                     currentScreen != AppScreen.TransactionScreen &&
                                     currentScreen != AppScreen.PaymentScreen &&
                                     currentScreen != AppScreen.SharedScreen
+
+                            showCustomize = currentScreen == AppScreen.InitialScreen
 
                             topBarTitle = when (currentScreen) {
                                 AppScreen.InitialScreen,

@@ -29,8 +29,10 @@ import com.flexcil.flexc.app.R
 
 @Composable
 fun TopBar(
-    title: String?, // <-- ТЕПЕР ЦЕ STRING? (може бути null)
-    isBackButton: Boolean = false
+    title: String?,
+    isBackButton: Boolean = false,
+    showCustomize: Boolean = false,
+    onCustomizeClick: () -> Unit = {}
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
 
@@ -41,13 +43,12 @@ fun TopBar(
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = backgroundColor,
-            scrolledContainerColor = Color.Unspecified,
-            navigationIconContentColor = Color.Unspecified,
-            titleContentColor = Color.Unspecified,
-            actionIconContentColor = Color.Unspecified
+            scrolledContainerColor = backgroundColor,
+            navigationIconContentColor = accentColor,
+            titleContentColor = textColor,
+            actionIconContentColor = accentColor
         ),
         title = {
-            // ЛОГІКА ТУТ: Якщо title == null, показуємо логотип. Інакше — текст.
             if (title == null) {
                 Image(
                     painter = painterResource(id = R.drawable.tatra_logo),
@@ -91,16 +92,20 @@ fun TopBar(
             }
         },
         actions = {
-            /* if(!isChanging) {
-                 Text(
-                     text = "Customize",
-                     color = accentColor,
-                     fontSize = 16.sp,
-                     fontWeight = FontWeight.Normal,
-                     modifier = Modifier
-                         .clickable { *//* Handle Customize click *//* }
+            if (showCustomize) {
+                Text(
+                    text = "Customize",
+                    color = accentColor,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier
+                        .clickable { onCustomizeClick() }
                         .padding(end = 16.dp, start = 8.dp, top = 8.dp, bottom = 8.dp)
-                )*/
+                )
+            } else {
+                // Empty spacer to maintain centering if needed, 
+                // but CenterAlignedTopAppBar handles it
+            }
         }
     )
 }

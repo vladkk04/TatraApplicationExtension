@@ -1,7 +1,5 @@
 package com.flexcil.flexc.contribute.screen
 
-import androidx.compose.runtime.Composable
-
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,9 +24,11 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,26 +37,17 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.BaselineShift
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-
-// --- Specific Colors from Design ---
-private val AppBackground = Color(0xFF14151A)
-private val InputBackground = Color(0xFF1C1D22)
-private val PrimaryBlue = Color(0xFF2B88F0)
-private val TextGray = Color(0xFF8B8D98)
-private val DividerGray = Color(0xFF2F3036)
-private val ExpenseRed = Color(0xFFE55D5D) // Червоний для витрат
 
 @Composable
 fun TransactionScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(AppBackground)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         // --- Header ---
         TransactionHeader()
@@ -72,7 +63,12 @@ fun TransactionScreen() {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Товстий розділювач між шапкою і списком
-        Box(modifier = Modifier.fillMaxWidth().height(8.dp).background(Color(0xFF0A0A0C)))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+                .background(Color(0xFF0A0A0C)) // Дуже темний спейсер
+        )
 
         // --- Transactions List ---
         LazyColumn(
@@ -83,7 +79,7 @@ fun TransactionScreen() {
                 item {
                     Text(
                         text = group.date,
-                        color = TextGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)
@@ -94,7 +90,7 @@ fun TransactionScreen() {
                 items(group.transactions) { transaction ->
                     TransactionItem(transaction = transaction)
                     HorizontalDivider(
-                        color = DividerGray.copy(alpha = 0.5f),
+                        color = MaterialTheme.colorScheme.outline.copy(alpha = 0.5f),
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
@@ -114,7 +110,7 @@ private fun TransactionHeader() {
     ) {
         Text(
             text = "Account transactions",
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onBackground,
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold
         )
@@ -129,7 +125,7 @@ private fun TransactionHeader() {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = PrimaryBlue,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
             // Small settings gear badge in top right corner
@@ -138,13 +134,13 @@ private fun TransactionHeader() {
                     .align(Alignment.TopEnd)
                     .size(14.dp)
                     .clip(CircleShape)
-                    .background(AppBackground), // Background to cut out the search icon behind it
+                    .background(MaterialTheme.colorScheme.background), // Background to cut out the search icon behind it
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
                     imageVector = Icons.Outlined.Settings,
                     contentDescription = null,
-                    tint = PrimaryBlue,
+                    tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(12.dp)
                 )
             }
@@ -158,13 +154,17 @@ private fun SearchBar(modifier: Modifier = Modifier) {
         value = "",
         onValueChange = {},
         placeholder = {
-            Text(text = "Search", color = TextGray, fontSize = 16.sp)
+            Text(
+                text = "Search",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                fontSize = 16.sp
+            )
         },
         leadingIcon = {
             Icon(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
-                tint = PrimaryBlue,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(20.dp)
             )
         },
@@ -173,11 +173,11 @@ private fun SearchBar(modifier: Modifier = Modifier) {
             .height(50.dp),
         shape = RoundedCornerShape(12.dp),
         colors = TextFieldDefaults.colors(
-            focusedContainerColor = InputBackground,
-            unfocusedContainerColor = InputBackground,
-            focusedIndicatorColor = Color.Transparent, // Прибираємо лінію внизу
+            focusedContainerColor = MaterialTheme.colorScheme.surface,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+            focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent,
-            cursorColor = PrimaryBlue
+            cursorColor = MaterialTheme.colorScheme.primary
         ),
         singleLine = true
     )
@@ -194,7 +194,7 @@ private fun AccountSelector(modifier: Modifier = Modifier) {
     ) {
         Text(
             text = "For account",
-            color = TextGray,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             fontSize = 14.sp,
             modifier = Modifier.padding(top = 2.dp)
         )
@@ -203,7 +203,7 @@ private fun AccountSelector(modifier: Modifier = Modifier) {
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "Klymiuk Vladyslav",
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
                 )
@@ -220,7 +220,7 @@ private fun AccountSelector(modifier: Modifier = Modifier) {
                             append("29 3858 0850")
                         }
                     },
-                    color = TextGray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 13.sp
                 )
             }
@@ -228,7 +228,7 @@ private fun AccountSelector(modifier: Modifier = Modifier) {
             Icon(
                 imageVector = Icons.Rounded.ArrowDropDown,
                 contentDescription = "Select Account",
-                tint = PrimaryBlue,
+                tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(24.dp)
             )
         }
@@ -250,7 +250,7 @@ private fun TransactionItem(transaction: Transaction) {
                 .width(12.dp)
                 .height(2.dp)
                 .clip(RoundedCornerShape(1.dp))
-                .background(ExpenseRed)
+                .background(MaterialTheme.colorScheme.error)
         )
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -259,7 +259,7 @@ private fun TransactionItem(transaction: Transaction) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = transaction.title,
-                color = Color.White,
+                color = MaterialTheme.colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
                 maxLines = 1,
@@ -269,7 +269,7 @@ private fun TransactionItem(transaction: Transaction) {
                 Spacer(modifier = Modifier.height(2.dp))
                 Text(
                     text = transaction.subtitle,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.onBackground,
                     fontSize = 14.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -278,7 +278,7 @@ private fun TransactionItem(transaction: Transaction) {
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = transaction.details,
-                color = TextGray,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
                 fontSize = 12.sp,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -293,14 +293,14 @@ private fun TransactionItem(transaction: Transaction) {
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
                     text = transaction.amount,
-                    color = ExpenseRed,
+                    color = MaterialTheme.colorScheme.error,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Medium
                 )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
                     text = transaction.currency,
-                    color = ExpenseRed,
+                    color = MaterialTheme.colorScheme.error,
                     fontSize = 11.sp,
                     modifier = Modifier.padding(bottom = 1.dp)
                 )
@@ -314,7 +314,7 @@ private fun TransactionItem(transaction: Transaction) {
                     Icon(
                         imageVector = Icons.Outlined.Cloud,
                         contentDescription = "CO2",
-                        tint = TextGray,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -322,12 +322,17 @@ private fun TransactionItem(transaction: Transaction) {
                         text = buildAnnotatedString {
                             append(transaction.co2)
                             append(" kg CO")
-                            withStyle(style = SpanStyle(baselineShift = BaselineShift.Subscript, fontSize = 9.sp)) {
+                            withStyle(
+                                style = SpanStyle(
+                                    baselineShift = BaselineShift.Subscript,
+                                    fontSize = 9.sp
+                                )
+                            ) {
                                 append("2")
                             }
                             append("e")
                         },
-                        color = TextGray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 12.sp
                     )
                 }

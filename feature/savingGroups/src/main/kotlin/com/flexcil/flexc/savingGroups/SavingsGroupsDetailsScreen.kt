@@ -44,19 +44,14 @@ private val AvatarOlive = Color(0xFFD2BCA0)
 private val AvatarPurple = Color(0xFF2B88F0)
 private val AvatarRose = Color(0xFFFBCFE8)
 
-private val DarkCardBorder = Color(0xFF2F3036)
-private val TabBackground = Color(0xFF1C1C1E)
-private val TabActiveBackground = Color(0xFF2C2C2E)
-
 data class Contributor(
     val id: String,
-    val initials: String,
     val name: String,
+    val initials: String,
     val amount: Double,
     val color: Color
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavingsGroupsDetailsScreen() {
     val navigator = LocalNavigator.current
@@ -66,19 +61,19 @@ fun SavingsGroupsDetailsScreen() {
     
     val incomeContributors = remember {
         listOf(
-            Contributor("1", "VD", "Vladyslav Dorosh", 1700.0, AvatarRed),
-            Contributor("2", "VK", "Vladyslav Klymiuk", 900.0, AvatarOlive),
-            Contributor("3", "DD", "Daniil Dryzhov", 1100.0, AvatarPurple),
-            Contributor("4", "DY", "Danyil Yatluk", 700.0, AvatarRose)
+            Contributor("1", "Vladyslav Dorosh", "VD", 1700.0, AvatarRed),
+            Contributor("2", "Vladyslav Klymiuk", "VK", 900.0, AvatarOlive),
+            Contributor("3", "Daniil Dryzhov", "DD", 1100.0, AvatarPurple),
+            Contributor("4", "Danyil Yatluk", "DY", 700.0, AvatarRose)
         )
     }
 
     val expenseContributors = remember {
         listOf(
-            Contributor("1", "VD", "Vladyslav Dorosh", -500.0, AvatarRed),
-            Contributor("2", "VK", "Vladyslav Klymiuk", -1200.0, AvatarOlive),
-            Contributor("3", "DD", "Daniil Dryzhov", -300.0, AvatarPurple),
-            Contributor("4", "DY", "Danyil Yatluk", -400.0, AvatarRose)
+            Contributor("1", "Vladyslav Dorosh", "VD", -500.0, AvatarRed),
+            Contributor("2", "Vladyslav Klymiuk", "VK", -1200.0, AvatarOlive),
+            Contributor("3", "Daniil Dryzhov", "DD", -300.0, AvatarPurple),
+            Contributor("4", "Danyil Yatluk", "DY", -400.0, AvatarRose)
         )
     }
 
@@ -91,6 +86,7 @@ fun SavingsGroupsDetailsScreen() {
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 16.dp)
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         SavingsOverviewCard(currentContributors, isExpense = selectedTab == 1)
         Spacer(modifier = Modifier.height(24.dp))
         SavingsTabs(selectedTab) { selectedTab = it }
@@ -142,7 +138,7 @@ fun SavingsGroupsDetailsScreen() {
                 )
             }
         )
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(100.dp))
     }
 
     if (showRequestDialog) {
@@ -170,37 +166,52 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
     // Reset selection when tab changes
     LaunchedEffect(isExpense) { selectedContributor = null }
 
-    val displayColor = if (isExpense) Color(0xFFE55D5D) else ChartGreen
+    val displayColor = if (isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.tertiary
 
     Surface(
         modifier = Modifier
             .fillMaxWidth()
             .heightIn(min = 200.dp),
-        shape = RoundedCornerShape(28.dp),
-        color = Color(0xFF1C1C1E),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(20.dp),
             verticalArrangement = Arrangement.Center
         ) {
+            Column {
+                Text(
+                    if (isExpense) "Total Expenses" else "Saving for Party",
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "SK11 1100 0000 0012 3456 7890",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.Bottom
             ) {
                 Column {
                     Text(
-                        if (isExpense) "Total Expenses" else "Your Savings",
-                        color = Color.White.copy(alpha = 0.6f),
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.Medium
+                        "Group balance",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp
                     )
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "${totalAmount.toInt()} EUR",
-                        color = if (isExpense) Color(0xFFE55D5D) else Color.White,
-                        fontSize = 32.sp,
+                        "${kotlin.math.abs(totalAmount).toInt()} EUR",
+                        color = if (isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
+                        fontSize = 28.sp,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -216,7 +227,7 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
                         .fillMaxWidth()
                         .height(14.dp)
                         .clip(CircleShape)
-                        .background(Color.White.copy(alpha = 0.1f))
+                        .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f))
                 ) {
                     Row(modifier = Modifier.fillMaxSize()) {
                         val totalMagnitude = contributors.sumOf { kotlin.math.abs(it.amount) }
@@ -237,31 +248,6 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
                         }
                     }
                 }
-
-                // Popup Tooltip
-                selectedContributor?.let { contributor ->
-                    Popup(
-                        alignment = Alignment.TopCenter,
-                        offset = androidx.compose.ui.unit.IntOffset(0, -100),
-                        onDismissRequest = { selectedContributor = null },
-                        properties = PopupProperties(focusable = false)
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = Color(0xFF2C2C2E),
-                            border = BorderStroke(1.dp, contributor.color.copy(alpha = 0.5f)),
-                            shadowElevation = 8.dp
-                        ) {
-                            Text(
-                                text = "${contributor.name}: ${contributor.amount.toInt()} EUR",
-                                color = Color.White,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                            )
-                        }
-                    }
-                }
             }
         }
     }
@@ -269,7 +255,7 @@ private fun SavingsOverviewCard(contributors: List<Contributor>, isExpense: Bool
 
 @Composable
 private fun SavingsChart(modifier: Modifier = Modifier, isExpense: Boolean = false) {
-    val chartColor = if (isExpense) Color(0xFFE55D5D) else ChartGreen
+    val chartColor = if (isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.tertiary
     Canvas(modifier = modifier) {
         val width = size.width
         val height = size.height
@@ -313,7 +299,7 @@ private fun SavingsTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
             .fillMaxWidth()
             .height(56.dp),
         shape = RoundedCornerShape(28.dp),
-        color = TabBackground
+        color = MaterialTheme.colorScheme.surface
     ) {
         Row(
             modifier = Modifier
@@ -328,13 +314,13 @@ private fun SavingsTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                         .weight(1f)
                         .fillMaxHeight()
                         .clip(RoundedCornerShape(24.dp))
-                        .background(if (selected) TabActiveBackground else Color.Transparent)
+                        .background(if (selected) MaterialTheme.colorScheme.surfaceVariant else Color.Transparent)
                         .clickable { onTabSelected(index) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = text,
-                        color = if (selected) Color.White else Color.White.copy(alpha = 0.5f),
+                        color = if (selected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 15.sp,
                         fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium
                     )
@@ -385,12 +371,11 @@ private fun ContributionsSection(
 private fun ContributorItem(contributor: Contributor, isExpense: Boolean) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF1C1C1E),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -411,20 +396,20 @@ private fun ContributorItem(contributor: Contributor, isExpense: Boolean) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     contributor.name,
-                    color = Color.White,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     "SK30 **** **** 3664",
-                    color = Color.White.copy(alpha = 0.4f),
-                    fontSize = 12.sp
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 13.sp
                 )
             }
             Text(
-                "${contributor.amount.toInt()} EUR",
-                color = if (isExpense) Color(0xFFE55D5D) else ChartGreen,
-                fontSize = 15.sp,
+                "${kotlin.math.abs(contributor.amount).toInt()} EUR",
+                color = if (isExpense) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.tertiary,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.Bold
             )
         }
@@ -463,24 +448,23 @@ private fun RequestItem(
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-        color = Color(0xFF1C1C1E),
-        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
     ) {
         Row(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier
                     .size(44.dp)
                     .clip(CircleShape)
-                    .background(if (isApproved) Color.Gray.copy(alpha = 0.2f) else AvatarRed.copy(alpha = 0.2f)),
+                    .background(if (isApproved) MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f) else AvatarOlive.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     request.requesterInitials,
-                    color = if (isApproved) Color.Gray else AvatarRed,
+                    color = if (isApproved) MaterialTheme.colorScheme.onSurfaceVariant else AvatarOlive.copy(alpha = 0.9f),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -488,13 +472,13 @@ private fun RequestItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     request.requesterName,
-                    color = if (isApproved) Color.Gray else Color.White,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.SemiBold
+                    color = if (isApproved) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.onSurface,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
                 )
                 Text(
                     "${request.amount.toInt()} EUR",
-                    color = if (isApproved) Color.Gray else Color(0xFFE55D5D),
+                    color = if (isApproved) MaterialTheme.colorScheme.onSurfaceVariant else MaterialTheme.colorScheme.error,
                     fontSize = 14.sp
                 )
             }
@@ -502,12 +486,12 @@ private fun RequestItem(
             if (isApproved) {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
-                    color = Color.White.copy(alpha = 0.05f),
-                    border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f),
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f))
                 ) {
                     Text(
                         "Approved ${request.approvedCount}/${request.totalNeeded}",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
