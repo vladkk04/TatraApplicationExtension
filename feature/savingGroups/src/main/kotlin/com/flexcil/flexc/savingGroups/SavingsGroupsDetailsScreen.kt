@@ -52,9 +52,7 @@ data class Contributor(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavingsGroupsDetailsScreen(
-    onBackClick: () -> Unit
-) {
+fun SavingsGroupsDetailsScreen() {
     var selectedTab by remember { mutableIntStateOf(0) }
     
     val incomeContributors = remember {
