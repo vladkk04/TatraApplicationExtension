@@ -27,4 +27,8 @@ class MainViewModel @Inject constructor(
         navigator.launchScreen(AppScreen.PaymentScreen)
     }
 
+    fun navigateBack() {
+        navigator.goBack()
+    }
+
 }

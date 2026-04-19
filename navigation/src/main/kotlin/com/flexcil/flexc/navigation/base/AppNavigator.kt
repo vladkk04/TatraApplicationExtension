@@ -27,7 +27,9 @@ class AppNavigator @Inject constructor() : Navigator {
     }
 
     override fun goBack() {
-        backStack.removeLastOrNull()
+        if (backStack.size > 1) {
+            backStack.removeLastOrNull()
+        }
     }
 
     @HiltViewModel

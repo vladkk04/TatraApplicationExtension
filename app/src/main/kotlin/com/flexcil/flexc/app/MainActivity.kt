@@ -29,13 +29,17 @@ class MainActivity : ComponentActivity() {
             val viewModel = hiltViewModel<MainViewModel>()
             var visibleBars by remember { mutableStateOf(true) }
             var changeTopBar by remember { mutableStateOf(false) }
+            var isBackButton by remember { mutableStateOf(false) }
 
             ApplicationTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
                         if (visibleBars) {
-                            TopBar(changeTopBar)
+                            TopBar(
+                                isChanging = changeTopBar,
+                                isBackButton = isBackButton
+                            )
                         }
                     },
                     bottomBar = {
@@ -51,8 +55,14 @@ class MainActivity : ComponentActivity() {
                 ) { contentPadding ->
                     AppNavDisplay(
                         backStack = { stack ->
-                            visibleBars = !stack.contains(AppScreen.QrScanner)
-                            changeTopBar = stack.contains(AppScreen.SharedScreen)
+                            val currentScreen = stack.lastOrNull()
+
+                            visibleBars = currentScreen != AppScreen.QrScanner
+
+                            changeTopBar = currentScreen == AppScreen.SharedScreen
+
+                            isBackButton = currentScreen != null &&
+                                    currentScreen != AppScreen.InitialScreen
                         },
                         modifier = Modifier
                             .fillMaxSize()
@@ -63,6 +73,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
-
