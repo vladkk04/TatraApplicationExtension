@@ -44,6 +44,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.collectAsState
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.flexcil.flexc.debtGroups.DebDetailsViewModel
+import com.flexcil.flexc.core.navigation.LocalNavigator
+import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.model.BackgroundStyle
 import com.flexcil.flexc.core.model.GroupItem
 import com.flexcil.flexc.core.ui.component.IconPickerSheet
@@ -51,36 +56,20 @@ import kotlin.math.abs
 
 private val mockGroups = listOf(
     GroupItem(
-        title = "Party",
+        title = "Party Debts",
         subtitle = "Вечірка",
         icon = Icons.Default.Group,
         usersCount = 4,
-        balance = 100.0,
+        balance = -10.0,
         backgroundStyle = BackgroundStyle.DARK_SOLID
 
     ),
     GroupItem(
-        title = "Food",
+        title = "Food Sharing",
         subtitle = "Їжа",
         icon = Icons.Default.Restaurant,
         usersCount = 3,
-        balance = -100.0,
-        backgroundStyle = BackgroundStyle.DARK_SOLID
-    ),
-    GroupItem(
-        title = "Weekend Trip",
-        subtitle = "Поїздка на вихідні",
-        icon = Icons.Default.Backpack,
-        usersCount = 3,
-        balance = 0.0,
-        backgroundStyle = BackgroundStyle.DARK_SOLID
-    ),
-    GroupItem(
-        title = "Lunch",
-        subtitle = "Обід",
-        icon = Icons.Default.Restaurant,
-        usersCount = 0,
-        balance = 0.0,
+        balance = -30.0,
         backgroundStyle = BackgroundStyle.DARK_SOLID
     )
 )
@@ -89,11 +78,20 @@ private val mockGroups = listOf(
 fun MeDebGroupScreen(
     onQrScannerClick: () -> Unit,
     onQrCreatorClick: () -> Unit,
-    onDetailsClick: () -> Unit
+    viewModel: DebDetailsViewModel = hiltViewModel()
 ) {
+    val navigator = LocalNavigator.current
+    val balance by viewModel.groupBalance.collectAsState()
     var showIconPicker by remember { mutableStateOf(false) }
     var currentGroups by remember { mutableStateOf(mockGroups) }
     var groupToUpdate by remember { mutableStateOf<GroupItem?>(null) }
+
+    // Use derived state for Party Debts to make it responsive
+    val finalGroups = currentGroups.map { group ->
+        if (group.title == "Party Debts") {
+            group.copy(balance = balance.replace("+", "").replace(" EUR", "").toDoubleOrNull() ?: 0.0)
+        } else group
+    }
 
     if (showIconPicker) {
         IconPickerSheet(
@@ -125,11 +123,13 @@ fun MeDebGroupScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // Group List
-        currentGroups.forEach { group ->
+        finalGroups.forEach { group ->
             GroupCard(
                 group = group,
                 onQrCreatorClick = onQrCreatorClick,
-                onDetailsClick = onDetailsClick,
+                onClick = {
+                    navigator.launchScreen(AppScreen.DebDetails(groupName = group.title))
+                },
                 onIconClick = {
                     groupToUpdate = group
                     showIconPicker = true
@@ -146,7 +146,7 @@ fun MeDebGroupScreen(
 private fun GroupCard(
     group: GroupItem,
     onQrCreatorClick: () -> Unit,
-    onDetailsClick: () -> Unit,
+    onClick: () -> Unit,
     onIconClick: () -> Unit
 ) {
     val isGradient = group.backgroundStyle != BackgroundStyle.DARK_SOLID
@@ -169,7 +169,7 @@ private fun GroupCard(
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .then(backgroundModifier)
-            .clickable(onClick = onDetailsClick),
+            .clickable(onClick = onClick),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

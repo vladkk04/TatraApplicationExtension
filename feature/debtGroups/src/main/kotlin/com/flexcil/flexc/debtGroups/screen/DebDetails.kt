@@ -29,10 +29,28 @@ import java.util.Locale
 import com.flexcil.flexc.debtGroups.DebDetailsViewModel
 
 @Composable
-fun DepDetailsScreen() {
+fun DepDetailsScreen(groupName: String? = null) {
 
     val viewModel = hiltViewModel<DebDetailsViewModel>()
     val expenses by viewModel.expenses.collectAsState()
+
+    val filteredExpenses = if (groupName == "Food Sharing") {
+        listOf(
+            com.flexcil.flexc.core.model.Expense(
+                title = "Dinner at Sky City",
+                subtitle = "Oleksandr",
+                avatars = 3,
+                checkedAvatarIndex = null,
+                isFirstAvatarEmpty = true,
+                amountValue = "90.00",
+                currency = "EUR",
+                buttonState = "PAY_NOW",
+                isCreatedByMe = false
+            )
+        )
+    } else {
+        expenses
+    }
 
 
     Column(
@@ -53,7 +71,7 @@ fun DepDetailsScreen() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Expenses",
+                text = groupName ?: "Expenses",
                 color = Color.White,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
@@ -66,13 +84,18 @@ fun DepDetailsScreen() {
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
                     .clickable {
-                        viewModel.navigateToCreateSpendingScreen()
+                        if (groupName == "Food Sharing") {
+                            // Show a simple snackbar or log for now, 
+                            // as we don't have a real persistent store for "Food Sharing" yet
+                        } else {
+                            viewModel.navigateToCreateSpendingScreen()
+                        }
                     }
                     .padding(4.dp)
             )
         }
 
-        ExpenseGroupList(expenses)
+        ExpenseGroupList(filteredExpenses)
     }
 }
 

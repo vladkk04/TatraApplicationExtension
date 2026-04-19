@@ -18,12 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.SyncAlt
 import androidx.compose.material.icons.outlined.CreditCard
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,8 +53,8 @@ fun BottomNavigationBar(
     val selectedColor = MaterialTheme.colorScheme.primary
     val unselectedColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-    var homeSelected by remember { mutableStateOf(true) }
-    var sharedSelected by remember { mutableStateOf(false) }
+    // Єдине джерело правди для визначення активної вкладки
+    var selectedTab by remember { mutableStateOf("Home") }
 
     Column(
         modifier = Modifier.fillMaxWidth()
@@ -77,28 +76,39 @@ fun BottomNavigationBar(
                 BottomNavItem(
                     icon = Icons.Default.Home,
                     label = "Home",
-                    selected = homeSelected,
+                    selected = selectedTab == "Home",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
-                    onClick = onHomeClick
+                    onClick = {
+                        selectedTab = "Home"
+                        onHomeClick()
+                    }
                 )
 
                 BottomNavItem(
                     icon = Icons.Default.SyncAlt,
                     label = "Transactions",
-                    selected = false,
+                    selected = selectedTab == "Transactions",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
-                    onClick = onTransactionClick
+                    onClick = {
+                        selectedTab = "Transactions"
+                        onTransactionClick()
+                    }
                 )
             }
 
             CenterPaymentItem(
                 icon = Icons.Outlined.CreditCard,
                 label = "Payment",
-                color = unselectedColor,
+                selected = selectedTab == "Payment", // Передаємо стан
+                selectedColor = selectedColor,
+                unselectedColor = unselectedColor,
                 gradientTopColor = selectedColor,
-                onClick = onPaymentClick
+                onClick = {
+                    selectedTab = "Payment"
+                    onPaymentClick()
+                }
             )
 
             Row(
@@ -107,14 +117,13 @@ fun BottomNavigationBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 BottomNavItem(
-                    icon = Icons.Default.AttachMoney,
+                    painter = painterResource(R.drawable.share), // Переконайтеся, що імпорт R правильний
                     label = "Shared",
-                    selected = sharedSelected,
+                    selected = selectedTab == "Shared",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
                     onClick = {
-                        sharedSelected = true
-                        homeSelected = false
+                        selectedTab = "Shared"
                         onSharedClick()
                     }
                 )
@@ -122,14 +131,17 @@ fun BottomNavigationBar(
                 BottomNavItem(
                     icon = Icons.Default.Menu,
                     label = "More",
-                    selected = false,
+                    selected = selectedTab == "More",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
+                    onClick = {
+                        selectedTab = "More"
+                        // Додайте onMoreClick сюди, якщо потрібно
+                    }
                 )
             }
         }
     }
-
 }
 
 @Composable
@@ -152,7 +164,7 @@ private fun BottomNavItem(
                 indication = null,
                 onClick = onClick
             )
-            .padding(horizontal = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Icon(
             imageVector = icon,
@@ -171,10 +183,50 @@ private fun BottomNavItem(
 }
 
 @Composable
+private fun BottomNavItem(
+    painter: Painter,
+    label: String,
+    selected: Boolean,
+    selectedColor: Color,
+    unselectedColor: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit = {}
+) {
+    val color = if (selected) selectedColor else unselectedColor
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null,
+                onClick = onClick
+            )
+            .padding(horizontal = 8.dp, vertical = 8.dp)
+    ) {
+        Icon(
+            painter = painter,
+            contentDescription = label,
+            tint = color,
+            modifier = Modifier.size(26.dp)
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = label,
+            color = color,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Medium
+        )
+    }
+}
+
+@Composable
 private fun CenterPaymentItem(
     icon: ImageVector,
     label: String,
-    color: Color,
+    selected: Boolean, // Додано параметр
+    selectedColor: Color, // Додано параметр
+    unselectedColor: Color, // Додано параметр
     gradientTopColor: Color,
     onClick: () -> Unit
 ) {
@@ -183,6 +235,9 @@ private fun CenterPaymentItem(
         startY = 0f,
         endY = 150f
     )
+
+    // Визначаємо колір іконки та тексту залежно від вибраного стану
+    val color = if (selected) selectedColor else unselectedColor
 
     Box(
         modifier = Modifier

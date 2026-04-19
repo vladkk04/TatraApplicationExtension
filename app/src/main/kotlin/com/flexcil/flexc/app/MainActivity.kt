@@ -28,7 +28,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = hiltViewModel<MainViewModel>()
             var visibleBars by remember { mutableStateOf(true) }
-            var changeTopBar by remember { mutableStateOf(false) }
+
+            // Змінна тепер може бути null. За замовчуванням null (щоб показувати лого)
+            var topBarTitle by remember { mutableStateOf<String?>(null) }
+
             var isBackButton by remember { mutableStateOf(false) }
 
             ApplicationTheme {
@@ -37,7 +40,7 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         if (visibleBars) {
                             TopBar(
-                                isChanging = changeTopBar,
+                                title = topBarTitle,
                                 isBackButton = isBackButton
                             )
                         }
@@ -59,10 +62,22 @@ class MainActivity : ComponentActivity() {
 
                             visibleBars = currentScreen != AppScreen.QrScanner
 
-                            changeTopBar = currentScreen == AppScreen.SharedScreen
-
                             isBackButton = currentScreen != null &&
-                                    currentScreen != AppScreen.InitialScreen
+                                    currentScreen != AppScreen.InitialScreen &&
+                                    currentScreen != AppScreen.TransactionScreen &&
+                                    currentScreen != AppScreen.PaymentScreen &&
+                                    currentScreen != AppScreen.SharedScreen
+
+                            topBarTitle = when (currentScreen) {
+                                AppScreen.InitialScreen,
+                                AppScreen.SharedScreen,
+                                AppScreen.TransactionScreen,
+                                AppScreen.PaymentScreen -> null
+
+                                AppScreen.CreateSpendingScreen -> "Adding New SubGroup"
+                                AppScreen.QrScanner -> "Scan QR"
+                                else -> "Details" // Резервний заголовок для інших екранів
+                            }
                         },
                         modifier = Modifier
                             .fillMaxSize()

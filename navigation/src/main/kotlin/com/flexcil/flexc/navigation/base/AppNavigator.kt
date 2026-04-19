@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 @ActivityRetainedScoped
 class AppNavigator @Inject constructor() : Navigator {
-    val backStack: NavBackStack<AppScreen> = NavBackStack(AppScreen.CreateSpendingScreen)
+    val backStack: NavBackStack<AppScreen> = NavBackStack(AppScreen.InitialScreen)
 
     override fun launchScreen(screen: AppScreen) {
         if (backStack.lastOrNull() == screen) {

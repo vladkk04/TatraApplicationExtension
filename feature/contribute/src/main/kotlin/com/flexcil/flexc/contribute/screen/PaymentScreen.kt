@@ -60,6 +60,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flexcil.flexc.core.navigation.AppScreen
+import com.flexcil.flexc.core.navigation.LocalNavigator
 
 // --- Specific Colors from Design ---
 private val AppBackground = Color(0xFF14151A)
@@ -69,13 +71,18 @@ private val TextGray = Color(0xFF8B8D98)
 private val DividerGray = Color(0xFF2F3036)
 private val ThickDividerBlack = Color(0xFF000000)
 
+
+//TODO CREATE PAYMENT SCREEN //TODO CREATE PAYMENT APPROVAL SYSTEM
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentScreen() {
-    var beneficiaryName by remember { mutableStateOf("") }
-    var iban by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("0,00") }
-    var information by remember { mutableStateOf("") }
+fun PaymentScreen(screen: AppScreen.PaymentScreen = AppScreen.PaymentScreen()) {
+    var beneficiaryName by remember { mutableStateOf(screen.beneficiaryName ?: "") }
+    var iban by remember { mutableStateOf(screen.iban ?: "") }
+    var amount by remember { mutableStateOf(screen.amount ?: "0,00") }
+    var information by remember { mutableStateOf(screen.information ?: "") }
+    val payerName by remember { mutableStateOf(screen.payerName ?: "Klymiuk Vladyslav") }
+    val payerIban by remember { mutableStateOf(screen.payerIban ?: "SK93 1100 0000 0029 3858 0850") }
+    val payerBalance by remember { mutableStateOf(screen.payerBalance ?: "2,47 EUR") }
 
     var showTransactionPicker by remember { mutableStateOf(false) }
 
@@ -101,17 +108,14 @@ fun PaymentScreen() {
         modifier = Modifier
             .fillMaxSize()
             .background(AppBackground)
+            .padding(top = 12.dp)
     ) {
-        // --- Header ---
-        PaymentHeader()
-
-        // --- Scrollable Content ---
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
         ) {
-            PayerSection()
+            PayerSection(payerName = payerName, payerIban = payerIban, balance = payerBalance)
             ThickDivider()
 
             BeneficiarySection(
@@ -142,8 +146,11 @@ fun PaymentScreen() {
                 .background(AppBackground)
                 .padding(horizontal = 16.dp, vertical = 16.dp)
         ) {
+            val navigator = LocalNavigator.current
             Button(
-                onClick = { /* Handle Review */ },
+                onClick = { 
+                    navigator.launchScreen(AppScreen.TransactionScreen)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -202,7 +209,7 @@ private fun PaymentHeader() {
 }
 
 @Composable
-private fun PayerSection() {
+private fun PayerSection(payerName: String, payerIban: String, balance: String) {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         // Payer Row
         Row(
@@ -210,27 +217,18 @@ private fun PayerSection() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Payer", color = TextGray, fontSize = 14.sp)
-            Text(text = "Klymiuk Vladyslav", color = Color.White, fontSize = 14.sp)
+            Text(text = payerName, color = Color.White, fontSize = 14.sp)
         }
         Spacer(modifier = Modifier.height(16.dp))
 
-        // IBAN Row with partial bold text
+        // IBAN Row
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "IBAN", color = TextGray, fontSize = 14.sp)
             Text(
-                text = buildAnnotatedString {
-                    append("SK93 ")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("1100 ")
-                    }
-                    append("0000 00")
-                    withStyle(style = SpanStyle(fontWeight = FontWeight.Bold)) {
-                        append("29 3858 0850")
-                    }
-                },
+                text = payerIban,
                 color = Color.White,
                 fontSize = 14.sp,
                 textAlign = TextAlign.End
@@ -244,7 +242,7 @@ private fun PayerSection() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Account balance", color = TextGray, fontSize = 14.sp)
-            Text(text = "2,47 EUR", color = Color.White, fontSize = 14.sp)
+            Text(text = balance, color = Color.White, fontSize = 14.sp)
         }
         Spacer(modifier = Modifier.height(24.dp))
 

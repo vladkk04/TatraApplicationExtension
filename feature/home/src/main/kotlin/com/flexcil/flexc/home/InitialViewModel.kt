@@ -14,5 +14,9 @@ class InitialViewModel @Inject constructor(
     private val navigator: Navigator
 ): ViewModel() {
 
+    fun navigateToPendingScreen() {
+        navigator.launchScreen(AppScreen.PendingScreen)
+    }
+
 
 }

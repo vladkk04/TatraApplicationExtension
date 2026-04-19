@@ -1,6 +1,7 @@
 package com.flexcil.flexc.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavBackStack
@@ -10,11 +11,13 @@ import androidx.navigation3.ui.NavDisplay
 import com.flexcil.flexc.contribute.screen.PaymentScreen
 import com.flexcil.flexc.contribute.screen.TransactionScreen
 import com.flexcil.flexc.core.navigation.AppScreen
+import com.flexcil.flexc.core.navigation.LocalNavigator
 import com.flexcil.flexc.createGroup.screen.CreateGroupScreen
 import com.flexcil.flexc.createGroup.screen.CreateSpendingScreen
 import com.flexcil.flexc.debtGroups.screen.DepDetailsScreen
 import com.flexcil.flexc.home.InitialScreen
 import com.flexcil.flexc.navigation.base.AppNavigator
+import com.flexcil.flexc.pending.PendingScreen
 import com.flexcil.flexc.qrCreator.QrCreatorScreen
 import com.flexcil.flexc.qrScanner.QrScannerScreen
 import com.flexcil.flexc.savingGroups.SavingsGroupsDetailsScreen
@@ -29,26 +32,29 @@ fun AppNavDisplay(
 
     backStack(navigator.backStack)
 
-    NavDisplay(
-        backStack = navigator.backStack,
-        onBack = { navigator.goBack() },
-        entryDecorators = listOf(
-            rememberSaveableStateHolderNavEntryDecorator(),
-            rememberViewModelStoreNavEntryDecorator()
-        ),
-        entryProvider = entryProvider {
-            entry(AppScreen.InitialScreen) { InitialScreen() }
-            entry(AppScreen.SharedScreen) { SharedScreen() }
-            entry(AppScreen.QrScanner) { QrScannerScreen() }
-            entry(AppScreen.NewGroup) { CreateGroupScreen() }
-            entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen() }
-            entry(AppScreen.QrCreator) { QrCreatorScreen() }
-            entry(AppScreen.DebDetails) { DepDetailsScreen()  }
-            entry(AppScreen.PaymentScreen) { PaymentScreen() }
-            entry(AppScreen.TransactionScreen) { TransactionScreen() }
-            entry(AppScreen.CreateGroupScreen) { CreateGroupScreen() }
-            entry(AppScreen.CreateSpendingScreen) { CreateSpendingScreen() }
-        },
-        modifier = modifier
-    )
+    CompositionLocalProvider(LocalNavigator.provides(navigator)) {
+        NavDisplay(
+            backStack = navigator.backStack,
+            onBack = { navigator.goBack() },
+            entryDecorators = listOf(
+                rememberSaveableStateHolderNavEntryDecorator(),
+                rememberViewModelStoreNavEntryDecorator()
+            ),
+            entryProvider = entryProvider {
+                entry(AppScreen.InitialScreen) { InitialScreen() }
+                entry(AppScreen.SharedScreen) { SharedScreen() }
+                entry(AppScreen.PendingScreen) { PendingScreen() }
+                entry(AppScreen.QrScanner) { QrScannerScreen() }
+                entry(AppScreen.NewGroup) { CreateGroupScreen() }
+                entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen() }
+                entry(AppScreen.QrCreator) { QrCreatorScreen() }
+                entry<AppScreen.DebDetails> { DepDetailsScreen(it.groupName) }
+                entry<AppScreen.PaymentScreen> { PaymentScreen(it) }
+                entry(AppScreen.TransactionScreen) { TransactionScreen() }
+                entry(AppScreen.CreateGroupScreen) { CreateGroupScreen() }
+                entry(AppScreen.CreateSpendingScreen) { CreateSpendingScreen() }
+            },
+            modifier = modifier
+        )
+    }
 }

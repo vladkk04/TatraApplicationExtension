@@ -29,13 +29,14 @@ import com.flexcil.flexc.app.R
 
 @Composable
 fun TopBar(
-    isChanging: Boolean = false,
+    title: String?, // <-- ТЕПЕР ЦЕ STRING? (може бути null)
     isBackButton: Boolean = false
 ) {
     val viewModel = hiltViewModel<MainViewModel>()
 
     val backgroundColor = MaterialTheme.colorScheme.background
     val accentColor = MaterialTheme.colorScheme.primary
+    val textColor = MaterialTheme.colorScheme.onSurface
 
     CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
@@ -46,34 +47,38 @@ fun TopBar(
             actionIconContentColor = Color.Unspecified
         ),
         title = {
-            if (!isChanging) {
+            // ЛОГІКА ТУТ: Якщо title == null, показуємо логотип. Інакше — текст.
+            if (title == null) {
                 Image(
                     painter = painterResource(id = R.drawable.tatra_logo),
                     contentDescription = "Logo",
                     modifier = Modifier.size(32.dp)
                 )
             } else {
-                Text("Shared Expenses")
+                Text(
+                    text = title,
+                    color = textColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
         },
         navigationIcon = {
-            // FIX: If it IS a back button, show the arrow and call navigateBack
             if (isBackButton) {
                 IconButton(
-                    onClick = viewModel::navigateBack, // <-- Corrected action
+                    onClick = viewModel::navigateBack,
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Outlined.ArrowBack,
-                        contentDescription = "Go Back", // <-- Updated description
+                        contentDescription = "Go Back",
                         tint = accentColor,
                         modifier = Modifier.size(28.dp)
                     )
                 }
             } else {
-                // FIX: If it is NOT a back button, show the email icon and do mail click
                 IconButton(
-                    onClick = { /* Handle mail click */ }, // <-- Corrected action
+                    onClick = { /* Handle mail click */ },
                     modifier = Modifier.padding(start = 8.dp)
                 ) {
                     Icon(

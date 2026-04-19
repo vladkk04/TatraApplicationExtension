@@ -21,7 +21,7 @@ class ShareViewModel @Inject constructor(
     }
 
     fun navigateToDebDetails() {
-        navigator.launchScreen(AppScreen.DebDetails)
+        navigator.launchScreen(AppScreen.DebDetails(groupName = "Party Debts"))
     }
 
     fun navigateToQrGenerator() {
