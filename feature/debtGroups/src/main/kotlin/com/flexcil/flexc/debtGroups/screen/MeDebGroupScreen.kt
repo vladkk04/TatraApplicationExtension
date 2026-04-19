@@ -81,7 +81,8 @@ private val mockGroups = listOf(
 @Composable
 fun MeDebGroupScreen(
     onQrScannerClick: () -> Unit,
-    onQrCreatorClick: () -> Unit
+    onQrCreatorClick: () -> Unit,
+    onDetailsClick: () -> Unit
 ) {
     Surface(
         modifier = Modifier
@@ -132,7 +133,8 @@ fun MeDebGroupScreen(
         items(mockGroups) { group ->
             GroupCard(
                 group = group,
-                onQrCreatorClick = onQrCreatorClick
+                onQrCreatorClick = onQrCreatorClick,
+                onDetailsClick = onDetailsClick
             )
         }
         item {
@@ -144,7 +146,8 @@ fun MeDebGroupScreen(
 @Composable
 private fun GroupCard(
     group: GroupItem,
-    onQrCreatorClick: () -> Unit
+    onQrCreatorClick: () -> Unit,
+    onDetailsClick: () -> Unit
 ) {
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
@@ -162,6 +165,7 @@ private fun GroupCard(
             .padding(horizontal = 16.dp)
             .clip(RoundedCornerShape(12.dp))
             .then(backgroundModifier)
+            .clickable(onClick = onDetailsClick),
     ) {
         Row(
             modifier = Modifier.padding(16.dp),

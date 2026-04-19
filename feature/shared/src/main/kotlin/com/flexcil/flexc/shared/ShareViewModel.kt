@@ -3,6 +3,7 @@ package com.flexcil.flexc.shared
 import androidx.lifecycle.ViewModel
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.navigation.Navigator
+import com.flexcil.flexc.core.ui.component.AppButton
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -17,5 +18,13 @@ class ShareViewModel @Inject constructor(
 
     fun navigateToCreateGroud() {
         navigator.launchScreen(AppScreen.NewGroup)
+    }
+
+    fun navigateToDebDetails() {
+        navigator.launchScreen(AppScreen.DebDetails)
+    }
+
+    fun navigateToQrGenerator() {
+        navigator.launchScreen(AppScreen.QrCreator)
     }
 }

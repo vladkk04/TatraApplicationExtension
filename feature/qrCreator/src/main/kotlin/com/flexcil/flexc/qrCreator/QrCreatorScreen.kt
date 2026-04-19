@@ -1,7 +1,5 @@
 package com.flexcil.flexc.qrCreator
 
-import android.graphics.Bitmap
-import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CreditCard
+import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -17,21 +16,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.zxing.BarcodeFormat
-import com.google.zxing.qrcode.QRCodeWriter
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QrCreatorScreen(
     onBackClick: () -> Unit
 ) {
-    val qrBitmap = remember { generateQrCode("https://tatra.example.com/join/mock-group-id") }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -78,18 +72,14 @@ fun QrCreatorScreen(
                         modifier = Modifier.fillMaxSize().padding(16.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // Real scannable QR Code
-                        qrBitmap?.let {
-                            Image(
-                                bitmap = it.asImageBitmap(),
-                                contentDescription = "QR Code",
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth()
-                                    .padding(8.dp)
-                            )
-                        } ?: CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-
+                        Image(
+                            imageVector = Icons.Default.QrCode,
+                            contentDescription = "QR Code",
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxWidth()
+                                .padding(8.dp)
+                        )
                         Spacer(modifier = Modifier.height(16.dp))
 
                         // Logo and Branding Footer
@@ -133,23 +123,5 @@ fun QrCreatorScreen(
                 }
             }
         }
-    }
-}
-
-private fun generateQrCode(content: String): Bitmap? {
-    return try {
-        val writer = QRCodeWriter()
-        val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, 512, 512)
-        val width = bitMatrix.width
-        val height = bitMatrix.height
-        val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
-        for (x in 0 until width) {
-            for (y in 0 until height) {
-                bitmap.setPixel(x, y, if (bitMatrix.get(x, y)) AndroidColor.BLACK else AndroidColor.WHITE)
-            }
-        }
-        bitmap
-    } catch (e: Exception) {
-        null
     }
 }
