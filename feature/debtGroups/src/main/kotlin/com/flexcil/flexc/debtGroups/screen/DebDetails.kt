@@ -258,7 +258,12 @@ private fun ExpenseSplitRow(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            ActionButton(state = buttonState)
+            ActionButton(
+                state = buttonState,
+                title = title,
+                amountValue = amountValue,
+                avatars = avatars
+            )
         }
     }
 }
@@ -418,7 +423,7 @@ enum class ButtonState {
 }
 
 @Composable
-private fun ActionButton(state: ButtonState) {
+private fun ActionButton(state: ButtonState, title: String = "", amountValue: String = "", avatars: Int = 1) {
 
     val viewModel = hiltViewModel<DebDetailsViewModel>()
 
@@ -433,7 +438,17 @@ private fun ActionButton(state: ButtonState) {
     }
 
     Button(
-        onClick = { if (state == ButtonState.PAY_NOW) viewModel.navigateToPayment() },
+        onClick = { 
+            if (state == ButtonState.PAY_NOW) {
+                val amountPerPerson = try {
+                    val total = amountValue.replace(",", ".").toDouble()
+                    String.format(Locale.US, "%.2f", total / avatars).replace(".", ",")
+                } catch (e: Exception) {
+                    "0,00"
+                }
+                viewModel.navigateToPayment(amount = amountPerPerson)
+            }
+        },
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,

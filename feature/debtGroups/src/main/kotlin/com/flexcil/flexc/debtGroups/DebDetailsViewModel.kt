@@ -50,8 +50,15 @@ class DebDetailsViewModel @Inject constructor(
         String.format(Locale.US, "%s%.0f EUR", prefix, totalBalance)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "0 EUR")
 
-    fun navigateToPayment() {
-        navigator.launchScreen(AppScreen.PaymentScreen())
+    fun navigateToPayment(beneficiaryName: String? = "Daniil Dryzov", amount: String? = "10,00") {
+        navigator.launchScreen(AppScreen.PaymentScreen(
+            beneficiaryName = beneficiaryName,
+            amount = amount,
+            iban = "SK12 1100 0000 0012 3456 7890",
+            payerName = "Vladyslav Klymiuk",
+            payerIban = "SK88 1100 0000 0098 7654 3210",
+            payerBalance = "2,47 EUR"
+        ))
     }
 
     fun navigateToCreateSpendingScreen() {
