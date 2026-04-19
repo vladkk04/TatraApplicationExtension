@@ -11,7 +11,7 @@ class SavingGroupsViewModel @Inject constructor(
     private val navigator: Navigator
 ): ViewModel() {
 
-    fun navigateToSavingGroupDetails() {
-        navigator.launchScreen(AppScreen.SavingGroupsDetails)
+    fun navigateToSavingGroupDetails(groupName: String) {
+        navigator.launchScreen(AppScreen.SavingGroupsDetails(groupName))
     }
 }

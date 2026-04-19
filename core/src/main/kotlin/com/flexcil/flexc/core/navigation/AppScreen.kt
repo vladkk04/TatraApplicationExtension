@@ -32,7 +32,7 @@ sealed interface AppScreen: NavKey {
     data class DebDetails(val groupName: String? = null) : AppScreen
 
     @Serializable
-    data object SavingGroupsDetails: AppScreen
+    data class SavingGroupsDetails(val groupName: String? = null): AppScreen
 
     @Serializable
     data object QrCreator: AppScreen

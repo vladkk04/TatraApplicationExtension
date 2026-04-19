@@ -58,29 +58,31 @@ data class Contributor(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavingsGroupsDetailsScreen() {
+fun SavingsGroupsDetailsScreen(groupName: String? = null) {
     val navigator = LocalNavigator.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showRequestDialog by remember { mutableStateOf(false) }
-    val requests = GlobalMockData.pendingRequests
     
-    val incomeContributors = remember {
+    val isMockGroup = groupName == "Saving for Party"
+    val requests = if (isMockGroup) GlobalMockData.pendingRequests else remember { mutableStateListOf() }
+    
+    val incomeContributors = if (isMockGroup) {
         listOf(
             Contributor("1", "VD", "Vladyslav Dorosh", 1700.0, AvatarRed),
             Contributor("2", "VK", "Vladyslav Klymiuk", 900.0, AvatarOlive),
             Contributor("3", "DD", "Daniil Dryzhov", 1100.0, AvatarPurple),
             Contributor("4", "DY", "Danyil Yatluk", 700.0, AvatarRose)
         )
-    }
+    } else emptyList()
 
-    val expenseContributors = remember {
+    val expenseContributors = if (isMockGroup) {
         listOf(
             Contributor("1", "VD", "Vladyslav Dorosh", -500.0, AvatarRed),
             Contributor("2", "VK", "Vladyslav Klymiuk", -1200.0, AvatarOlive),
             Contributor("3", "DD", "Daniil Dryzhov", -300.0, AvatarPurple),
             Contributor("4", "DY", "Danyil Yatluk", -400.0, AvatarRose)
         )
-    }
+    } else emptyList()
 
     val currentContributors = if (selectedTab == 0) incomeContributors else expenseContributors
 
