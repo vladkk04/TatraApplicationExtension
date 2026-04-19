@@ -33,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
+import com.flexcil.flexc.core.model.ExpenseRequest
+import com.flexcil.flexc.core.model.GlobalMockData
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.navigation.LocalNavigator
 
@@ -54,37 +56,13 @@ data class Contributor(
     val color: Color
 )
 
-object GlobalMockData {
-    val pendingRequests = mutableStateListOf<ExpenseRequest>()
-}
-
-
-data class ExpenseRequest(
-    val id: String,
-    val requesterName: String,
-    val requesterInitials: String,
-    val amount: Double,
-    var approvedCount: Int = 0,
-    val totalNeeded: Int = 3,
-    var isSelfApproved: Boolean = false
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SavingsGroupsDetailsScreen() {
     val navigator = LocalNavigator.current
     var selectedTab by remember { mutableIntStateOf(0) }
     var showRequestDialog by remember { mutableStateOf(false) }
-    val requests = remember { 
-        mutableStateListOf<ExpenseRequest>(
-            ExpenseRequest(
-                id = "pending-1",
-                requesterName = "Vladyslav Klymiuk",
-                requesterInitials = "VK",
-                amount = 150.0
-            )
-        )
-    }
+    val requests = GlobalMockData.pendingRequests
     
     val incomeContributors = remember {
         listOf(

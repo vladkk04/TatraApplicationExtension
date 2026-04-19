@@ -60,6 +60,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.flexcil.flexc.core.model.ExpenseRequest
+import com.flexcil.flexc.core.model.GlobalMockData
 import com.flexcil.flexc.core.navigation.AppScreen
 import com.flexcil.flexc.core.navigation.LocalNavigator
 
@@ -147,6 +149,14 @@ fun RequestExpenseScreen(screen: AppScreen.RequestExpenseScreen = AppScreen.Requ
             val navigator = LocalNavigator.current
             Button(
                 onClick = { 
+                    GlobalMockData.pendingRequests.add(
+                        ExpenseRequest(
+                            id = java.util.UUID.randomUUID().toString(),
+                            requesterName = "Vladyslav Klymiuk",
+                            requesterInitials = "VK",
+                            amount = amount.replace(",", ".").toDoubleOrNull() ?: 0.0
+                        )
+                    )
                     navigator.goBack()
                 },
                 modifier = Modifier
