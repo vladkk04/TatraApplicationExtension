@@ -143,16 +143,6 @@ fun CreateSpendingScreen() {
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        Text(
-            text = "New Expense",
-            color = MaterialTheme.colorScheme.onSurface,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
-        )
 
         // --- Expense Section (Toggle based on state) ---
         if (selectedExpense == null) {
@@ -334,13 +324,13 @@ fun CreateSpendingScreen() {
 
         // --- Apply Button ---
         Row(
+            horizontalArrangement = Arrangement.Center,
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
         ) {
             Button(
                 onClick = { /* Apply Action */ },
                 modifier = Modifier
-                    .width(140.dp)
+                    .fillMaxWidth(0.9f)
                     .height(48.dp),
                 shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
@@ -348,7 +338,7 @@ fun CreateSpendingScreen() {
                     contentColor = Color.White
                 )
             ) {
-                Text("Apply", fontSize = 16.sp, fontWeight = FontWeight.Medium)
+                Text("Confirm", fontSize = 16.sp, fontWeight = FontWeight.Medium)
             }
         }
     }

@@ -17,6 +17,10 @@ import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.outlined.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.flexcil.flexc.core.model.BackgroundStyle
 import com.flexcil.flexc.core.model.GroupItem
+import com.flexcil.flexc.core.ui.component.IconPickerSheet
 
 val mockGroups = listOf(
     GroupItem(
@@ -69,6 +74,23 @@ fun SavingGroupsScreen(
     viewModel: SavingGroupsViewModel = hiltViewModel(),
     onQrCreatorClick: () -> Unit
 ) {
+    var showIconPicker by remember { mutableStateOf(false) }
+    var currentGroups by remember { mutableStateOf(mockGroups) }
+    var groupToUpdate by remember { mutableStateOf<GroupItem?>(null) }
+
+    if (showIconPicker) {
+        IconPickerSheet(
+            onDismissRequest = { showIconPicker = false },
+            onIconSelected = { newIcon ->
+                groupToUpdate?.let { target ->
+                    currentGroups = currentGroups.map {
+                        if (it.title == target.title) it.copy(icon = newIcon) else it
+                    }
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -87,7 +109,7 @@ fun SavingGroupsScreen(
         Spacer(modifier = Modifier.height(12.dp))
 
         // --- Groups List ---
-        mockGroups.forEach { group ->
+        currentGroups.forEach { group ->
             GroupCard(
                 group = group,
                 onQrCreatorClick = onQrCreatorClick,
@@ -96,6 +118,10 @@ fun SavingGroupsScreen(
                     if (group.title == "Party") {
                         viewModel.navigateToSavingGroupDetails()
                     }
+                },
+                onIconClick = {
+                    groupToUpdate = group
+                    showIconPicker = true
                 }
             )
             Spacer(modifier = Modifier.height(12.dp))
@@ -110,8 +136,10 @@ fun SavingGroupsScreen(
 fun GroupCard(
     group: GroupItem,
     onQrCreatorClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onIconClick: () -> Unit
 ) {
+    val isGradient = group.backgroundStyle != BackgroundStyle.DARK_SOLID
     val backgroundModifier = when (group.backgroundStyle) {
         BackgroundStyle.RED_GRADIENT -> Modifier.background(
             Brush.linearGradient(listOf(Color(0xFFE55D5D), Color(0xFF4A2B2B)))
@@ -121,6 +149,9 @@ fun GroupCard(
         )
         BackgroundStyle.DARK_SOLID -> Modifier.background(MaterialTheme.colorScheme.surface)
     }
+
+    val titleColor = if (isGradient) Color.White else MaterialTheme.colorScheme.onSurface
+    val subtitleColor = if (isGradient) Color.White.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
         modifier = Modifier
@@ -139,7 +170,8 @@ fun GroupCard(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(RoundedCornerShape(12.dp))
-                    .background(Color.Black.copy(alpha = 0.3f)),
+                    .background(Color.Black.copy(alpha = 0.3f))
+                    .clickable { onIconClick() },
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -156,13 +188,13 @@ fun GroupCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = group.title,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = titleColor,
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
                     text = group.subtitle,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = subtitleColor,
                     fontSize = 12.sp
                 )
                 Spacer(modifier = Modifier.height(8.dp))

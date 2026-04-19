@@ -41,12 +41,8 @@ fun AppNavDisplay(
             entry(AppScreen.SharedScreen) { SharedScreen() }
             entry(AppScreen.QrScanner) { QrScannerScreen() }
             entry(AppScreen.NewGroup) { CreateGroupScreen() }
-            entry(AppScreen.SavingGroupsDetails) { 
-                SavingsGroupsDetailsScreen(onBackClick = { navigator.goBack() }) 
-            }
-            entry(AppScreen.QrCreator) {
-                QrCreatorScreen(onBackClick = { navigator.goBack() })
-            }
+            entry(AppScreen.SavingGroupsDetails) { SavingsGroupsDetailsScreen() }
+            entry(AppScreen.QrCreator) { QrCreatorScreen() }
             entry(AppScreen.DebDetails) { DepDetailsScreen()  }
             entry(AppScreen.PaymentScreen) { PaymentScreen() }
             entry(AppScreen.TransactionScreen) { TransactionScreen() }

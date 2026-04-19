@@ -14,4 +14,8 @@ class DebDetailsViewModel @Inject constructor(
     fun navigateToPayment() {
         navigator.launchScreen(AppScreen.PaymentScreen)
     }
+
+    fun navigateToCreateSpendingScreen() {
+        navigator.launchScreen(AppScreen.CreateSpendingScreen)
+    }
 }

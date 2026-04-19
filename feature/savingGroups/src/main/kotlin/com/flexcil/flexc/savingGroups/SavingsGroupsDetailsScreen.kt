@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -27,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -50,12 +52,22 @@ data class Contributor(
     val color: Color
 )
 
+data class ExpenseRequest(
+    val id: String,
+    val requesterName: String,
+    val requesterInitials: String,
+    val amount: Double,
+    var approvedCount: Int = 0,
+    val totalNeeded: Int = 3,
+    var isSelfApproved: Boolean = false
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SavingsGroupsDetailsScreen(
-    onBackClick: () -> Unit
-) {
+fun SavingsGroupsDetailsScreen() {
     var selectedTab by remember { mutableIntStateOf(0) }
+    var showRequestDialog by remember { mutableStateOf(false) }
+    val requests = remember { mutableStateListOf<ExpenseRequest>() }
     
     val incomeContributors = remember {
         listOf(
@@ -88,10 +100,43 @@ fun SavingsGroupsDetailsScreen(
         Spacer(modifier = Modifier.height(24.dp))
         SavingsTabs(selectedTab) { selectedTab = it }
         Spacer(modifier = Modifier.height(24.dp))
-        RequestsSection()
+        RequestsSection(
+            requests = requests,
+            onApprove = { id ->
+                val index = requests.indexOfFirst { it.id == id }
+                if (index != -1) {
+                    val request = requests[index]
+                    requests[index] = request.copy(
+                        approvedCount = request.approvedCount + 1,
+                        isSelfApproved = true
+                    )
+                }
+            }
+        )
         Spacer(modifier = Modifier.height(32.dp))
-        ContributionsSection(currentContributors, isExpense = selectedTab == 1)
+        ContributionsSection(
+            contributors = currentContributors,
+            isExpense = selectedTab == 1,
+            onRequestExpense = { showRequestDialog = true }
+        )
         Spacer(modifier = Modifier.height(40.dp))
+    }
+
+    if (showRequestDialog) {
+        AddRequestDialog(
+            onDismiss = { showRequestDialog = false },
+            onSave = { amount ->
+                requests.add(
+                    ExpenseRequest(
+                        id = java.util.UUID.randomUUID().toString(),
+                        requesterName = "Vladyslav Dorosh", // Mock user
+                        requesterInitials = "VD",
+                        amount = amount
+                    )
+                )
+                showRequestDialog = false
+            }
+        )
     }
 }
 
@@ -277,7 +322,11 @@ private fun SavingsTabs(selectedTab: Int, onTabSelected: (Int) -> Unit) {
 }
 
 @Composable
-private fun ContributionsSection(contributors: List<Contributor>, isExpense: Boolean) {
+private fun ContributionsSection(
+    contributors: List<Contributor>,
+    isExpense: Boolean,
+    onRequestExpense: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -295,7 +344,7 @@ private fun ContributionsSection(contributors: List<Contributor>, isExpense: Boo
                 color = MaterialTheme.colorScheme.primary,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.clickable { }
+                modifier = Modifier.clickable { onRequestExpense() }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))
@@ -357,9 +406,12 @@ private fun ContributorItem(contributor: Contributor, isExpense: Boolean) {
 }
 
 @Composable
-private fun RequestsSection() {
-    var isApproved by remember { mutableStateOf(false) }
-    
+private fun RequestsSection(
+    requests: List<ExpenseRequest>,
+    onApprove: (String) -> Unit
+) {
+    if (requests.isEmpty()) return
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             "Requests",
@@ -368,60 +420,160 @@ private fun RequestsSection() {
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(16.dp))
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFF1C1C1E),
-            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+        
+        requests.forEach { request ->
+            RequestItem(request, onApprove)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+private fun RequestItem(
+    request: ExpenseRequest,
+    onApprove: (String) -> Unit
+) {
+    val isApproved = request.isSelfApproved
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFF1C1C1E),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(CircleShape)
+                    .background(if (isApproved) Color.Gray.copy(alpha = 0.2f) else AvatarRed.copy(alpha = 0.2f)),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(if (isApproved) Color.Gray.copy(alpha = 0.2f) else AvatarRed.copy(alpha = 0.2f)),
-                    contentAlignment = Alignment.Center
+                Text(
+                    request.requesterInitials,
+                    color = if (isApproved) Color.Gray else AvatarRed,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    request.requesterName,
+                    color = if (isApproved) Color.Gray else Color.White,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    "${request.amount.toInt()} EUR",
+                    color = if (isApproved) Color.Gray else Color(0xFFE55D5D),
+                    fontSize = 14.sp
+                )
+            }
+
+            if (isApproved) {
+                Surface(
+                    shape = RoundedCornerShape(12.dp),
+                    color = Color.White.copy(alpha = 0.05f),
+                    border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
                 ) {
-                    Text("VD", color = if (isApproved) Color.Gray else AvatarRed, fontWeight = FontWeight.Bold)
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        "Vladyslav Dorosh",
-                        color = if (isApproved) Color.Gray else Color.White,
-                        fontSize = 15.sp,
-                        fontWeight = FontWeight.SemiBold
+                        "Approved ${request.approvedCount}/${request.totalNeeded}",
+                        color = Color.Gray,
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
                     )
-                    Text("1200 EUR", color = if (isApproved) Color.Gray else Color(0xFFE55D5D), fontSize = 14.sp)
                 }
+            } else {
+                Button(
+                    onClick = { onApprove(request.id) },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    Text("Approve", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun AddRequestDialog(
+    onDismiss: () -> Unit,
+    onSave: (amount: Double) -> Unit
+) {
+    var amount by remember { mutableStateOf("") }
+
+    androidx.compose.ui.window.Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(24.dp)),
+            color = Color(0xFF1C1C1E),
+            border = BorderStroke(1.dp, Color.White.copy(alpha = 0.1f))
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Request Expense",
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(24.dp))
                 
-                if (isApproved) {
-                    Surface(
-                        shape = RoundedCornerShape(12.dp),
-                        color = Color.White.copy(alpha = 0.05f),
-                        border = BorderStroke(1.dp, Color.Gray.copy(alpha = 0.3f))
+                OutlinedTextField(
+                    value = amount,
+                    onValueChange = { if (it.isEmpty() || it.toDoubleOrNull() != null) amount = it },
+                    label = { Text("Amount (EUR)", color = Color.White.copy(alpha = 0.5f)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(12.dp),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedTextColor = Color.White,
+                        focusedTextColor = Color.White,
+                    )
+                )
+                
+                Spacer(modifier = Modifier.height(32.dp))
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Text(
-                            "Approved 1/3",
-                            color = Color.Gray,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)
-                        )
+                        Text("Cancel", color = Color.White.copy(alpha = 0.6f))
                     }
-                } else {
                     Button(
-                        onClick = { isApproved = true },
+                        onClick = {
+                            val amountDouble = amount.toDoubleOrNull()
+                            if (amountDouble != null) {
+                                onSave(amountDouble)
+                            }
+                        },
+                        modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                        )
                     ) {
-                        Text("Approve", fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("Request", fontWeight = FontWeight.Bold)
                     }
                 }
             }
