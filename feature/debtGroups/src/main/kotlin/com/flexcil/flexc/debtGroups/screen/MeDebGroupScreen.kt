@@ -56,7 +56,8 @@ private val mockGroups = listOf(
         icon = Icons.Default.Group,
         usersCount = 4,
         balance = 100.0,
-        backgroundStyle = BackgroundStyle.RED_GRADIENT
+        backgroundStyle = BackgroundStyle.DARK_SOLID
+
     ),
     GroupItem(
         title = "Food",
@@ -72,7 +73,7 @@ private val mockGroups = listOf(
         icon = Icons.Default.Backpack,
         usersCount = 3,
         balance = 0.0,
-        backgroundStyle = BackgroundStyle.BLUE_GRADIENT
+        backgroundStyle = BackgroundStyle.DARK_SOLID
     ),
     GroupItem(
         title = "Lunch",
@@ -110,39 +111,9 @@ fun MeDebGroupScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(vertical = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clip(RoundedCornerShape(12.dp))
-                .clickable(onClick = onQrScannerClick),
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    imageVector = Icons.Outlined.QrCodeScanner,
-                    contentDescription = "Scan QR",
-                    tint = MaterialTheme.colorScheme.onPrimary,
-                    modifier = Modifier.size(32.dp)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Scan QR code to\njoin a group",
-                    color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Medium,
-                    lineHeight = 20.sp
-                )
-            }
-        }
-
-        Spacer(modifier = Modifier.height(24.dp))
-
         Text(
             text = "Your groups",
             color = MaterialTheme.colorScheme.onSurface,

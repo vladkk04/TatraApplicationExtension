@@ -23,9 +23,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.flexcil.flexc.debtGroups.DebDetailsViewModel
 
 @Composable
 fun DepDetailsScreen() {
+
+    val viewModel = hiltViewModel<DebDetailsViewModel>()
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,6 +63,7 @@ fun DepDetailsScreen() {
                 fontWeight = FontWeight.Medium,
                 modifier = Modifier
                     .clickable {
+                        viewModel.navigateToCreateSpendingScreen()
                     }
                     .padding(4.dp)
             )
@@ -367,6 +374,9 @@ enum class ButtonState {
 
 @Composable
 private fun ActionButton(state: ButtonState) {
+
+    val viewModel = hiltViewModel<DebDetailsViewModel>()
+
     val containerColor = when (state) {
         ButtonState.PAY_NOW -> Color(0xFF007AFF)
         ButtonState.PAID_CHECKED -> MaterialTheme.colorScheme.surfaceVariant
@@ -378,7 +388,7 @@ private fun ActionButton(state: ButtonState) {
     }
 
     Button(
-        onClick = { /* Handle action */ },
+        onClick = viewModel::navigateToPayment,
         shape = RoundedCornerShape(8.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,

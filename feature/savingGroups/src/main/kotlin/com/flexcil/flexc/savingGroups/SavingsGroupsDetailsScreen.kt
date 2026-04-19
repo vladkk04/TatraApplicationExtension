@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -27,6 +28,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Popup
@@ -535,6 +537,7 @@ fun AddRequestDialog(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(12.dp),
                     singleLine = true,
+                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
                     colors = OutlinedTextFieldDefaults.colors(
                         unfocusedBorderColor = Color.White.copy(alpha = 0.1f),
                         focusedBorderColor = MaterialTheme.colorScheme.primary,
