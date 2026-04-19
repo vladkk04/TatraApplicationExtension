@@ -15,6 +15,7 @@ import com.flexcil.flexc.createGroup.screen.CreateSpendingScreen
 import com.flexcil.flexc.debtGroups.screen.DepDetailsScreen
 import com.flexcil.flexc.home.InitialScreen
 import com.flexcil.flexc.navigation.base.AppNavigator
+import com.flexcil.flexc.pending.PendingScreen
 import com.flexcil.flexc.qrCreator.QrCreatorScreen
 import com.flexcil.flexc.qrScanner.QrScannerScreen
 import com.flexcil.flexc.savingGroups.SavingsGroupsDetailsScreen
@@ -38,6 +39,7 @@ fun AppNavDisplay(
         ),
         entryProvider = entryProvider {
             entry(AppScreen.InitialScreen) { InitialScreen() }
+            entry(AppScreen.PendingScreen) { PendingScreen() }
             entry(AppScreen.SharedScreen) { SharedScreen() }
             entry(AppScreen.QrScanner) { QrScannerScreen() }
             entry(AppScreen.NewGroup) { CreateGroupScreen() }

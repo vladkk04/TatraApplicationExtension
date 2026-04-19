@@ -16,6 +16,7 @@ dependencies {
     implementation(projects.feature.contribute)
     implementation(projects.feature.transaction)
     implementation(projects.feature.createSpending)
+    implementation(projects.feature.pending)
 
 
     implementation(projects.core)

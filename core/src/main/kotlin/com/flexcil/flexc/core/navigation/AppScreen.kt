@@ -10,6 +10,9 @@ sealed interface AppScreen: NavKey {
     data object InitialScreen : AppScreen
 
     @Serializable
+    data object PendingScreen : AppScreen
+
+    @Serializable
     data object SharedScreen : AppScreen
 
     @Serializable
