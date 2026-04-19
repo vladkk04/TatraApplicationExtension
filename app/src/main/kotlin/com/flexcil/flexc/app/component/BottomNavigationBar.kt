@@ -118,12 +118,12 @@ fun BottomNavigationBar(
             ) {
                 BottomNavItem(
                     painter = painterResource(R.drawable.share),
-                    label = "Offers",
-                    selected = selectedTab == "Offers",
+                    label = "Shared",
+                    selected = selectedTab == "Shared",
                     selectedColor = selectedColor,
                     unselectedColor = unselectedColor,
                     onClick = {
-                        selectedTab = "Offers"
+                        selectedTab = "Shared"
                         onSharedClick()
                     }
                 )
